@@ -47,7 +47,7 @@ function StepHeader({ num, title, active, done, onClick, locked }: { num: number
       }}>
         {done ? <IcCheck /> : num}
       </div>
-      <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--forest)', margin: 0, letterSpacing: '-0.01em' }}>{title}</h3>
+      <h3 style={{ fontSize: 'clamp(0.95rem, 3.5vw, 1.2rem)', fontWeight: 600, color: 'var(--forest)', margin: 0, letterSpacing: '-0.01em', overflowWrap: 'break-word', wordBreak: 'normal' }}>{title}</h3>
       {done && !active && <span style={{ marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 500, color: 'var(--sage)', textTransform: 'uppercase' }}>Change</span>}
     </div>
   );
@@ -288,14 +288,14 @@ function BookFlow() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
             {/* STEP 1: ADDRESS */}
-            <div style={{ background: '#fff', borderRadius: 32, padding: activeStep === 0 ? '40px' : '0 40px', border: activeStep === 0 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 0 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden' }}>
+            <div className={activeStep === 0 ? 'book-step-active' : 'book-step-inactive'} style={{ background: '#fff', borderRadius: 32, padding: activeStep === 0 ? '40px' : '0 40px', border: activeStep === 0 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 0 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden' }}>
               <StepHeader num={1} title="Service Address" active={activeStep === 0} done={activeStep > 0} onClick={() => setActiveStep(0)} locked={false} />
               <AnimatePresence>
                 {activeStep === 0 && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ paddingBottom: 40, borderTop: '1px solid var(--border-gold)', paddingTop: 32 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                       {/* Address Mode Toggle */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div className="book-addr-toggle" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                         <button
                           type="button"
                           onClick={() => {
@@ -356,12 +356,12 @@ function BookFlow() {
                         Additional details (so gardener finds you easily)
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <div className="book-addr-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                         <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>ROOM / FLAT NO.</label><input placeholder="e.g. B-204" value={addrFields.roomNo} onChange={e => updateAddr({ roomNo: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                         <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>BUILDING / SOCIETY</label><input placeholder="e.g. ATS Pristine" value={addrFields.building} onChange={e => updateAddr({ building: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                       </div>
                       <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>AREA / LANDMARK</label><input placeholder="Sector 150" value={addrFields.area} onChange={e => updateAddr({ area: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <div className="book-addr-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                         <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>CITY</label><input placeholder="e.g. Noida" value={addrFields.city} onChange={e => updateAddr({ city: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                         <div>
                           <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>STATE</label>
@@ -399,7 +399,7 @@ function BookFlow() {
             </div>
 
             {/* STEP 2: PLAN SELECTION */}
-            <div style={{ background: '#fff', borderRadius: 32, padding: activeStep === 1 ? '40px' : '0 40px', border: activeStep === 1 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 1 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 1 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 1 ? 'none' : 'auto' }}>
+            <div className={activeStep === 1 ? 'book-step-active' : 'book-step-inactive'} style={{ background: '#fff', borderRadius: 32, padding: activeStep === 1 ? '40px' : '0 40px', border: activeStep === 1 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 1 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 1 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 1 ? 'none' : 'auto' }}>
               <StepHeader num={2} title="Choose Your Care Plan" active={activeStep === 1} done={activeStep > 1} onClick={() => setActiveStep(1)} locked={activeStep < 1} />
               <AnimatePresence>
                 {activeStep === 1 && (
@@ -424,7 +424,7 @@ function BookFlow() {
             </div>
 
             {/* STEP 3: PLANT COUNT */}
-            <div style={{ background: '#fff', borderRadius: 32, padding: activeStep === 2 ? '40px' : '0 40px', border: activeStep === 2 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 2 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 2 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 2 ? 'none' : 'auto' }}>
+            <div className={activeStep === 2 ? 'book-step-active' : 'book-step-inactive'} style={{ background: '#fff', borderRadius: 32, padding: activeStep === 2 ? '40px' : '0 40px', border: activeStep === 2 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 2 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 2 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 2 ? 'none' : 'auto' }}>
               <StepHeader num={3} title="Number of Plants" active={activeStep === 2} done={activeStep > 2} onClick={() => setActiveStep(2)} locked={activeStep < 2} />
               <AnimatePresence>
                 {activeStep === 2 && (
@@ -445,7 +445,7 @@ function BookFlow() {
             </div>
 
             {/* STEP 4: ADD-ONS */}
-            <div style={{ background: '#fff', borderRadius: 32, padding: activeStep === 3 ? '40px' : '0 40px', border: activeStep === 3 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 3 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 3 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 3 ? 'none' : 'auto' }}>
+            <div className={activeStep === 3 ? 'book-step-active' : 'book-step-inactive'} style={{ background: '#fff', borderRadius: 32, padding: activeStep === 3 ? '40px' : '0 40px', border: activeStep === 3 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 3 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 3 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 3 ? 'none' : 'auto' }}>
               <StepHeader num={4} title="Enhance Your Visit (Add-ons)" active={activeStep === 3} done={activeStep > 3} onClick={() => setActiveStep(3)} locked={activeStep < 3} />
               <AnimatePresence>
                 {activeStep === 3 && (
@@ -470,7 +470,7 @@ function BookFlow() {
 
             {/* STEP 5: SCHEDULE (On-Demand only) */}
             {!isSubscriptionPlan && (
-            <div style={{ background: '#fff', borderRadius: 32, padding: activeStep === 4 ? '40px' : '0 40px', border: activeStep === 4 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 4 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 4 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 4 ? 'none' : 'auto' }}>
+            <div className={activeStep === 4 ? 'book-step-active' : 'book-step-inactive'} style={{ background: '#fff', borderRadius: 32, padding: activeStep === 4 ? '40px' : '0 40px', border: activeStep === 4 ? '2px solid var(--forest)' : '1px solid var(--border)', boxShadow: activeStep === 4 ? '0 8px 40px rgba(3,65,26,0.12)' : 'none', overflow: 'hidden', filter: activeStep < 4 ? 'blur(4px)' : 'none', pointerEvents: activeStep < 4 ? 'none' : 'auto' }}>
               <StepHeader num={5} title="Pick Your Preferred Slot" active={activeStep === 4} done={activeStep > 4} onClick={() => setActiveStep(4)} locked={activeStep < 4} />
               <AnimatePresence>
                 {activeStep === 4 && (

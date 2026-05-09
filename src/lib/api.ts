@@ -332,6 +332,10 @@ export const createOrder = (b: {
   geofence_id?: number;
   service_latitude?: number;
   service_longitude?: number;
+  apply_gst?: boolean;
+  shipping_state?: string;
+  billing_gstin?: string;
+  billing_business_name?: string;
 }) => req('/shop/orders', { method: 'POST', body: JSON.stringify(b) });
 export const getMyOrders = () => req('/shop/orders/my');
 export const getTaglines = () => req('/taglines', { auth: false });

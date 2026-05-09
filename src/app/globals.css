@@ -218,6 +218,16 @@ h4,
 h5,
 h6 {
   font-style: normal !important;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+}
+
+/* Global: never break letters mid-word; only wrap at spaces */
+* {
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
 }
 
 .lead {
@@ -6708,7 +6718,8 @@ body {
   /* Raised ticket card — prevent overflow */
   .complaint-ticket-card {
     padding: 20px 16px !important;
-    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  word-break: normal !important;
   }
 
   .complaint-ticket-card * {
@@ -7812,7 +7823,8 @@ body {
   color: rgba(255, 255, 255, 0.92);
   letter-spacing: -0.02em;
   line-height: 1.05;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .gm-hl-gold {
@@ -8328,4 +8340,41 @@ body {
 
 .notif-close:hover {
   color: var(--forest);
+}
+/* ── Book page — mobile responsive fixes ── */
+@media (max-width: 600px) {
+  /* Step cards: reduce padding on mobile */
+  .book-step-active {
+    padding: 20px 16px !important;
+    border-radius: 20px !important;
+  }
+  .book-step-inactive {
+    padding: 0 16px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Address mode toggle — stack on very small screens */
+  .book-addr-toggle {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Address detail fields — stack on mobile */
+  .book-addr-fields {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── AddressPicker modal — mobile fixes ── */
+@media (max-width: 480px) {
+  .addr-picker-search-row {
+    flex-direction: column !important;
+  }
+  .addr-picker-search-row button {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  .addr-picker-map {
+    min-height: 200px !important;
+  }
 }
