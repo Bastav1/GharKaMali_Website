@@ -124,11 +124,8 @@ function LoginForm() {
 
       <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 460, animation: 'fade-up 0.5s var(--ease) both' }}>
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 36, textDecoration: 'none' }}>
-          <div className="logo-mark" style={{ width: 60, height: 60, borderRadius: 18 }}>
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3C9.5 3 6 6 6 10c0 5 6 11 6 11s6-6 6-11c0-4-3.5-7-6-7z" fill="rgba(255,255,255,0.9)"/><path d="M12 7c-1.2 1.5-1.8 3-1.8 3.8 0 1.2.8 2 1.8 2.4.9-.4 1.8-1.2 1.8-2.4C13.8 10 13.2 8.5 12 7z" fill="#C9A84C"/></svg>
-          </div>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.4rem', color: '#fff', letterSpacing: '-0.01em' }}>GharKaMali</div>
+        <Link href="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 36, textDecoration: 'none' }}>
+          <img src="/logo.png" alt="GharKaMali" style={{ height: 64, width: 'auto', objectFit: 'contain' }} />
         </Link>
 
         {/* Card */}

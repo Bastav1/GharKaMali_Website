@@ -780,16 +780,16 @@ export default function HomePage() {
                 </div>
               </h1>
 
-              <p className="hero-subtitle" style={{ maxWidth: 640, marginBottom: 28, fontWeight: 500, color: 'rgba(255,255,255,0.82)', textShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: 'clamp(0.82rem, 1.1vw, 0.97rem)', lineHeight: 1.75 }}>
+              <p className="hero-subtitle" style={{ maxWidth: 640, marginBottom: 28, fontWeight: 500, color: 'rgba(255,255,255,0.82)', textShadow: '0 2px 8px rgba(0,0,0,0.3)', fontSize: 'clamp(0.9rem, 1.8vw, 1rem)', lineHeight: 1.7 }}>
                 Professional plant care services across Noida, Greater Noida, Greater Noida West, and Ghaziabad. We take care of watering, pruning, pest control, and plant health—so your plants always stay green.
               </p>
 
               <div className="hero-cta-row" style={{ display: 'flex', gap: 14, justifyContent: 'flex-start', flexWrap: 'wrap', position: 'relative' }}>
-                <Link href="/book?type=on-demand" className="btn btn-primary btn-md btn-3d-plant" style={{ position: 'relative', overflow: 'visible', padding: '12px 28px' }}>
+                <Link href="/book?type=on-demand" className="btn btn-primary btn-md btn-3d-plant" style={{ position: 'relative', overflow: 'visible', padding: '11px 24px' }}>
                   Book Mali Visit @ ₹349 <IcArrow />
                 </Link>
-                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-md hero-wa-btn" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', padding: '13px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  Get Free Plant Advice on WhatsApp
+                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-md hero-wa-btn" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', padding: '11px 22px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  Free Plant Advice
                 </a>
               </div>
 
@@ -868,14 +868,14 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap', marginBottom: 32 }}>
+          <div className="city-pills-grid" style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
             {['Noida', 'Greater Noida', 'Greater Noida West', 'Ghaziabad'].map((city, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#fff', border: '1.5px solid var(--border-gold)', borderRadius: 99, padding: '12px 28px', fontWeight: 800, color: 'var(--forest)', fontSize: '0.95rem', boxShadow: 'var(--sh-sm)' }}>
+              <div key={i} className="city-pill" style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: '1.5px solid var(--border-gold)', borderRadius: 99, padding: '9px 20px', fontWeight: 600, color: 'var(--forest)', fontSize: '0.88rem', boxShadow: 'var(--sh-sm)' }}>
                 <span style={{ color: 'var(--earth)' }}><IcMap /></span>
                 {city}
               </div>
             ))}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--forest)', border: '1.5px solid var(--forest)', borderRadius: 99, padding: '12px 28px', fontWeight: 800, color: '#fff', fontSize: '0.95rem', boxShadow: 'var(--sh-sm)' }}>
+            <div className="city-pill" style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--forest)', border: '1.5px solid var(--forest)', borderRadius: 99, padding: '9px 20px', fontWeight: 600, color: '#fff', fontSize: '0.88rem', boxShadow: 'var(--sh-sm)' }}>
               🚀 Gurugram — Launching Soon
             </div>
           </div>
@@ -889,7 +889,7 @@ export default function HomePage() {
           <div className="prof-gardening-grid">
             <div className="prof-gardening-content s-reveal s-reveal-d1">
               <span className="overline" style={{ color: 'var(--earth)' }}>Service Excellence</span>
-              <h2 className="display-1 heading-two-tone" style={{ fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', marginTop: 12, textAlign: 'left', width: 'auto', lineHeight: 1.1 }}>Why Choose <span>GharKaMali?</span></h2>
+              <h2 className="display-1 heading-two-tone" style={{ marginTop: 12, textAlign: 'left', width: 'auto', lineHeight: 1.15 }}>Why Choose <span>GharKaMali?</span></h2>
               <p style={{ color: 'var(--text-2)', fontSize: '0.9rem', marginTop: 24, lineHeight: 1.8, maxWidth: 500, fontWeight: 500 }}>
                 We solve all of this with expert home gardening services at your doorstep.
               </p>
@@ -900,8 +900,8 @@ export default function HomePage() {
                   'Plants drying or turning yellow?',
                   'Not sure what your plants need?'
                 ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--forest)', fontWeight: 700 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', boxShadow: 'var(--sh-sm)' }}>✓</div>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'var(--forest)', fontWeight: 600, fontSize: '0.92rem' }}>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', boxShadow: 'var(--sh-sm)', flexShrink: 0 }}>✓</div>
                     {item}
                   </div>
                 ))}
@@ -1254,11 +1254,11 @@ export default function HomePage() {
             <div style={{ position: 'absolute', right: -60, top: -60, width: 340, height: 340, borderRadius: '50%', background: 'radial-gradient(circle, rgba(237,207,135,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', left: -40, bottom: -40, width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(3,65,26,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-            <h2 className="heading-two-tone" style={{ fontSize: 'clamp(1.8rem, 4.5vw, 3.2rem)', fontWeight: 900, marginBottom: 24, lineHeight: 1.1, position: 'relative', fontStyle: 'normal' }}>
+            <h2 className="heading-two-tone" style={{ fontWeight: 700, marginBottom: 16, lineHeight: 1.15, position: 'relative', fontStyle: 'normal' }}>
               Give Your Plants the<br />
               <span>Care They Deserve</span>
             </h2>
-            <p style={{ color: 'var(--text-2)', fontSize: 'clamp(0.95rem,1.4vw,1.2rem)', maxWidth: 640, margin: '0 auto 44px', lineHeight: 1.8, fontWeight: 500 }}>
+            <p style={{ color: 'var(--text-2)', fontSize: 'clamp(0.88rem, 1.4vw, 1rem)', maxWidth: 640, margin: '0 auto 32px', lineHeight: 1.75, fontWeight: 500 }}>
               Book your first visit today and experience professional plant care at home.
             </p>
             <div className="final-cta-actions" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>

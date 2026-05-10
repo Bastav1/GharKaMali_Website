@@ -142,8 +142,70 @@ video {
 }
 
 /* ═══════════════════════════════════════════════════════
-   TYPOGRAPHY
+   TYPOGRAPHY — strict hierarchy, consistent across all pages
 ═══════════════════════════════════════════════════════ */
+
+/* Base heading defaults — h1 always biggest, h6 always smallest */
+h1 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h4 {
+  font-size: clamp(0.98rem, 2vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h5 {
+  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+h6 {
+  font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-style: normal !important;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  color: var(--forest);
+  margin: 0;
+}
+
+p {
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+  line-height: 1.75;
+  color: var(--text-2);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ── Display scale (hero / section headings) ── */
 .display-0 {
   font-family: var(--font-display);
   font-size: clamp(2.8rem, 7vw, 6rem);
@@ -155,18 +217,19 @@ video {
 
 .display-1 {
   font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 700;
-  line-height: 1.05;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   font-style: normal;
 }
 
+/* Section headings used across all sections */
 .display-2 {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   font-style: normal;
   display: block;
@@ -182,45 +245,67 @@ video {
   }
 }
 
+/* On mobile, section headings align center */
+@media (max-width: 768px) {
+  .display-2 {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* ── MOBILE HEADING MINIMUM SIZES ──────────────────────────
+   !important beats inline style props in React JSX.
+   Ensures headings are ALWAYS visibly larger than buttons (0.88–1rem).
+─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  h1 { font-size: clamp(1.6rem,  7vw,  2.2rem)  !important; font-weight: 700 !important; line-height: 1.15 !important; }
+  h2 { font-size: clamp(1.3rem,  5.5vw, 1.75rem) !important; font-weight: 700 !important; line-height: 1.2  !important; }
+  h3 { font-size: clamp(1.05rem, 4.5vw, 1.4rem)  !important; font-weight: 600 !important; line-height: 1.25 !important; }
+  h4 { font-size: clamp(0.95rem, 4vw,  1.15rem)  !important; font-weight: 500 !important; }
+  h5 { font-size: clamp(0.88rem, 3.5vw, 1.02rem) !important; font-weight: 500 !important; }
+  h6 { font-size: clamp(0.82rem, 3vw,  0.95rem)  !important; font-weight: 500 !important; }
+
+  /* Section heading class */
+  .display-2 {
+    font-size: clamp(1.25rem, 5vw, 1.65rem) !important;
+    font-weight: 700 !important;
+  }
+
+  /* Buttons — always smaller than h3 minimum */
+  .btn, .btn-lg, .btn-xl, .btn-sm, .btn-forest, .btn-primary, .btn-outline, .btn-white {
+    font-size: clamp(0.8rem, 3.5vw, 0.92rem) !important;
+    font-weight: 500 !important;
+  }
+}
+
 .h1 {
   font-family: var(--font-display);
-  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
-  font-weight: 600;
-  line-height: 1.2;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .h2 {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
-  font-weight: 600;
-  line-height: 1.25;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
   font-style: normal;
 }
 
 .h3 {
   font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.3;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.25;
   font-style: normal;
 }
 
 .lead {
   font-size: clamp(0.85rem, 1.2vw, 1rem);
   line-height: 1.7;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-style: normal !important;
-  overflow-wrap: break-word;
-  word-break: normal;
-  hyphens: none;
+  font-weight: 500;
 }
 
 /* Global: never break letters mid-word; only wrap at spaces */
@@ -239,9 +324,9 @@ h6 {
 
 .overline {
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   color: var(--gold);
   font-family: var(--font-mono);
 }
@@ -803,24 +888,36 @@ html.snap {
     text-align: center;
   }
 
-  /* Force font-weight 500 for most elements on mobile, but keep brand titles impactful */
-  *, h2, h3, h4, h5, h6, .display-2, .btn, .btn-lg, .btn-xl, span, div, p {
+  /* Buttons and utility text: lighter weight */
+  .btn,
+  .btn-lg,
+  .btn-xl,
+  .btn-sm,
+  p,
+  .lead,
+  .overline {
     font-weight: 500 !important;
   }
 
-  .typewriter-gradient, .display-1 {
-    font-weight: 700 !important; /* Allow some weight for titles */
-  }
+  /* Headings: keep impact but not excessively heavy */
+  h1, .h1, .display-0 { font-weight: 700 !important; }
+  h2, .h2, .display-1, .display-2 { font-weight: 700 !important; }
+  h3, .h3 { font-weight: 600 !important; }
+  h4, h5, h6 { font-weight: 500 !important; }
+  .typewriter-gradient { font-weight: 700 !important; }
 
+  /* Section heading sizes — big enough to read, not overlapping */
   .display-1 {
-    font-size: 2.8rem !important;
-    margin-bottom: 20px !important;
-    line-height: 1.1 !important;
+    font-size: clamp(1.6rem, 6.5vw, 2.2rem) !important;
+    margin-bottom: 16px !important;
+    line-height: 1.15 !important;
   }
 
   .display-2 {
-    font-size: 1.8rem !important;
-    margin-bottom: 12px !important;
+    font-size: clamp(1.25rem, 5vw, 1.65rem) !important;
+    margin-bottom: 10px !important;
+    text-align: center !important;
+    width: 100% !important;
   }
 
   .hero-badge {
@@ -858,7 +955,8 @@ html.snap {
     justify-content: flex-start !important;
   }
 
-  .brand-story-section h2, .brand-story-section h3 {
+  .brand-story-section h2,
+  .brand-story-section h3 {
     text-align: left !important;
   }
 }
@@ -1086,7 +1184,7 @@ html.snap {
   position: relative;
   overflow: hidden;
   user-select: none;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .btn:disabled {
@@ -5858,29 +5956,47 @@ section:has(.marquee-container) {
 
 @media (max-width: 480px) {
 
-  /* hero title display font — shrink */
-  .hero-title {
-    font-size: clamp(2.1rem, 9vw, 3rem) !important;
+  /* Strict size hierarchy — each level clearly bigger than next */
+  h1, .h1 { font-size: clamp(1.65rem, 7.5vw, 2.1rem)  !important; font-weight: 700 !important; }
+  h2, .h2 { font-size: clamp(1.3rem,  6vw,   1.65rem) !important; font-weight: 700 !important; }
+  h3, .h3 { font-size: clamp(1.1rem,  5vw,   1.35rem) !important; font-weight: 600 !important; }
+  h4       { font-size: clamp(0.98rem, 4.5vw, 1.15rem) !important; font-weight: 500 !important; }
+  h5, h6   { font-size: clamp(0.88rem, 4vw,   1rem)   !important; font-weight: 500 !important; }
+  p        { font-size: clamp(0.82rem, 3.8vw, 0.92rem) !important; font-weight: 400 !important; }
+
+  /* Buttons — always lighter & smaller than headings */
+  .btn, .btn-lg, .btn-xl, .btn-sm {
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
   }
 
-  .display-1 {
-    font-size: clamp(1.8rem, 8vw, 2.6rem) !important;
-  }
-
+  /* Section heading — .display-2 used for all section titles */
   .display-2 {
-    font-size: clamp(1.4rem, 6vw, 2rem) !important;
+    font-size: clamp(1.3rem, 5.5vw, 1.65rem) !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    width: 100% !important;
   }
 
-  /* hero stats — still 2-col, smaller */
-  .hero-stat-num {
-    font-size: 1.6rem !important;
+  /* Hero / large display */
+  .hero-title   { font-size: clamp(1.7rem, 8vw,   2.3rem) !important; }
+  .display-0    { font-size: clamp(1.9rem, 8.5vw, 2.6rem) !important; }
+  .display-1    { font-size: clamp(1.5rem, 6.5vw, 2rem)   !important; }
+
+  .gm-hl-white,
+  .gm-hl-gold {
+    font-size: clamp(1.5rem, 7.5vw, 2rem) !important;
+    font-weight: 700 !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
   }
 
-  .hero-trust-line {
-    display: none !important;
+  .typewriter-gradient {
+    font-size: clamp(1.7rem, 8vw, 2.3rem) !important;
   }
 
-  /* too crowded; hide on tiny screens */
+  .hero-stat-num { font-size: 1.4rem !important; }
+  .hero-trust-line { display: none !important; }
 }
 
 /* ── Dashboard page ── */
@@ -6719,7 +6835,7 @@ body {
   .complaint-ticket-card {
     padding: 20px 16px !important;
     overflow-wrap: break-word !important;
-  word-break: normal !important;
+    word-break: normal !important;
   }
 
   .complaint-ticket-card * {
@@ -7837,7 +7953,8 @@ body {
   background-clip: text;
   letter-spacing: -0.02em;
   line-height: 1.05;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 /* Thin divider rule */
@@ -8341,13 +8458,16 @@ body {
 .notif-close:hover {
   color: var(--forest);
 }
+
 /* ── Book page — mobile responsive fixes ── */
 @media (max-width: 600px) {
+
   /* Step cards: reduce padding on mobile */
   .book-step-active {
     padding: 20px 16px !important;
     border-radius: 20px !important;
   }
+
   .book-step-inactive {
     padding: 0 16px !important;
     border-radius: 20px !important;
@@ -8369,12 +8489,93 @@ body {
   .addr-picker-search-row {
     flex-direction: column !important;
   }
+
   .addr-picker-search-row button {
     width: 100% !important;
     justify-content: center !important;
     text-align: center !important;
   }
+
   .addr-picker-map {
     min-height: 200px !important;
+  }
+}
+
+/* ── Product detail page — mobile ── */
+@media (max-width: 860px) {
+  .pdp-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .pdp-gallery {
+    position: relative !important;
+    top: auto !important;
+  }
+
+  .pdp-main-img {
+    height: 320px !important;
+    min-height: unset !important;
+  }
+
+  .pdt-table-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pdp-cta-row {
+    flex-direction: column !important;
+  }
+
+  .pdp-cta-row a,
+  .pdp-cta-row button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .pdp-trust-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+/* ── City pills — compact on mobile ── */
+@media (max-width: 640px) {
+  .city-pills-grid {
+    gap: 8px !important;
+  }
+  .city-pill {
+    padding: 7px 14px !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    gap: 6px !important;
+  }
+}
+
+/* ── Hero CTA row — stack neatly on mobile ── */
+@media (max-width: 640px) {
+  .hero-cta-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+  .hero-cta-row .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 12px 20px !important;
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* ── Ensure body/paragraph text always smaller than h3 on mobile ── */
+@media (max-width: 768px) {
+  p, .lead, .overline, span:not(.typewriter-gradient):not(.gm-hl-gold):not(.gm-hl-white) {
+    font-size: revert; /* let the cascade handle it */
+  }
+  /* Hard cap: no div-based content text should exceed h4 size */
+  .hero-subtitle {
+    font-size: clamp(0.88rem, 3.8vw, 1rem) !important;
+    line-height: 1.65 !important;
   }
 }

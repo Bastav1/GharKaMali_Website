@@ -23,6 +23,8 @@ function findProduct(list: any[], slug: string) {
   ) ?? null;
 }
 
+export const dynamicParams = true; // serve new products on-demand without a rebuild
+
 /* ── Static params for build-time pre-rendering ── */
 export async function generateStaticParams() {
   const products = await fetchAllProducts();
