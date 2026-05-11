@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Terms & Conditions — GharKaMali',
     description: "GharKaMali's Terms of Service, Privacy Policy, and Gardener App Terms.",
     url: 'https://gharkamali.com/terms',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'GharKaMali Legal' }],
+    images: [{ url: '/hero-visual.png', width: 1200, height: 630, alt: 'GharKaMali Legal' }],
   },
   twitter: {
     card: 'summary',

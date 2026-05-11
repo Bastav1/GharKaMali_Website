@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: 'GharKaMali Plant Store — Buy Plants, Pots & Garden Products Online',
     description: 'Buy plants, pots, tools and garden essentials online. Fast delivery in Noida & Greater Noida. Best prices guaranteed.',
     url: 'https://gharkamali.com/shop',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'GharKaMali Plant Store' }],
+    images: [{ url: '/hero-visual.png', width: 1200, height: 630, alt: 'GharKaMali Plant Store' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'GharKaMali Plant Store — Buy Plants, Pots & Garden Products Online',
     description: 'Buy plants, pots, tools and garden essentials online. Fast delivery in Noida & Greater Noida.',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'GharKaMali Plant Store' }],
+    images: [{ url: '/hero-visual.png', alt: 'GharKaMali Plant Store' }],
   },
 };
 

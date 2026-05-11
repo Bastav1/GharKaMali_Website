@@ -146,10 +146,10 @@ export default function Footer() {
             {/* Socials */}
             <div className="footer-social-row" style={{ display: 'flex', flexDirection: 'row', gap: 10, marginTop: 4, flexWrap: 'nowrap', justifyContent: 'center' }}>
               {[
-                { Icon: IcInsta, href: '#', label: 'Instagram' },
-                { Icon: IcYT, href: '#', label: 'YouTube' },
-                { Icon: IcFacebook, href: '#', label: 'Facebook' },
-                { Icon: IcLinkedIn, href: '#', label: 'LinkedIn' },
+                { Icon: IcInsta, href: 'https://www.instagram.com/gharkamali', label: 'Instagram' },
+                { Icon: IcYT, href: 'https://www.youtube.com/@gharkamali', label: 'YouTube' },
+                { Icon: IcFacebook, href: 'https://www.facebook.com/gharkamali', label: 'Facebook' },
+                { Icon: IcLinkedIn, href: 'https://www.linkedin.com/company/gharkamali', label: 'LinkedIn' },
                 { Icon: IcWhatsApp, href: WA_URL, label: 'WhatsApp' },
               ].map(s => (
                 <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}

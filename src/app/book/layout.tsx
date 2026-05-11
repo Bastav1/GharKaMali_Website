@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
     description: 'Professional plant care at your doorstep. Book in 60 seconds. Expert gardeners in Noida & Greater Noida.',
     url: 'https://gharkamali.com/book',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'Book a Gardener — GharKaMali' }],
+    images: [{ url: '/hero-visual.png', width: 1200, height: 630, alt: 'Book a Gardener — GharKaMali' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
     description: 'Professional plant care at your doorstep. Book in 60 seconds.',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'Book a Gardener — GharKaMali' }],
+    images: [{ url: '/hero-visual.png', alt: 'Book a Gardener — GharKaMali' }],
   },
 };
 

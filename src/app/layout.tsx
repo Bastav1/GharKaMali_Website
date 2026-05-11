@@ -49,8 +49,8 @@ export const metadata: Metadata = {
     description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
     url: 'https://gharkamali.com',
     images: [
-      { url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'GharKaMali — Professional Gardening Service' },
-      { url: 'https://gharkamali.com/logo.png', width: 512, height: 512, alt: 'GharKaMali Logo' },
+      { url: '/hero-visual.png', width: 1200, height: 630, alt: 'GharKaMali — Professional Gardening Service' },
+      { url: '/logo.png', width: 512, height: 512, alt: 'GharKaMali Logo' },
     ],
   },
   twitter: {
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'GharKaMali — Expert Plant Care at Home | Starting ₹349',
     description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'GharKaMali — Professional Gardening Service' }],
+    images: [{ url: '/hero-visual.png', alt: 'GharKaMali — Professional Gardening Service' }],
   },
   icons: {
     icon: [
@@ -131,8 +131,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               legalName: 'GharKaMali',
               description: 'Expert plant care at your home. Professional gardening services starting ₹349/month.',
               url: 'https://gharkamali.com',
-              logo: 'https://gharkamali.com/logo.png',
-              image: 'https://gharkamali.com/logo.png',
+              logo: '/logo.png',
+              image: '/logo.png',
               telephone: '+91-9999999999',
               email: 'hello@gharkamali.com',
               address: {

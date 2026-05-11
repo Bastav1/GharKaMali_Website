@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: 'Careers at GharKaMali — Grow With Us',
     description: "Be part of India's most trusted home gardening platform. Grow your career while helping others grow their gardens.",
     url: 'https://gharkamali.com/careers',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'Careers at GharKaMali' }],
+    images: [{ url: '/hero-visual.png', width: 1200, height: 630, alt: 'Careers at GharKaMali' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'Careers at GharKaMali — Grow With Us',
     description: "Be part of India's most trusted home gardening platform.",
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'Careers at GharKaMali' }],
+    images: [{ url: '/hero-visual.png', alt: 'Careers at GharKaMali' }],
   },
 };
 
