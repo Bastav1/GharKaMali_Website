@@ -1,15 +1,32 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Garden & Balcony Makeover — GharKaMali | Transform Your Space',
-  description: 'Complete garden and balcony makeover services in Noida & Greater Noida. Expert landscape design, plant setup, and ongoing care.',
-  keywords: ['balcony makeover noida', 'garden makeover', 'landscape design noida', 'balcony garden setup'],
+  title: 'Garden & Balcony Makeover — GharKaMali | Transform Your Space in Noida',
+  description: 'Complete garden and balcony makeover services in Noida & Greater Noida. Expert landscape design, plant setup, soil preparation, and ongoing care. Get a free quote!',
+  keywords: [
+    'balcony makeover noida', 'garden makeover', 'landscape design noida', 'balcony garden setup',
+    'terrace garden makeover', 'green balcony noida', 'garden transformation noida',
+    'landscaping service noida', 'garden design delhi ncr', 'balcony planting service',
+    'outdoor space makeover', 'apartment balcony garden', 'rooftop garden noida',
+  ],
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' } },
   alternates: { canonical: 'https://gharkamali.com/green-makeover' },
   openGraph: {
-    title: 'Garden Makeover Services — GharKaMali',
-    description: 'Transform your balcony or garden with expert design and plant care.',
+    type: 'website',
+    locale: 'en_IN',
+    siteName: 'GharKaMali',
+    title: 'Garden & Balcony Makeover Services — GharKaMali',
+    description: 'Transform your balcony or garden with expert design and plant care. Complete makeover services in Noida & Greater Noida.',
     url: 'https://gharkamali.com/green-makeover',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630 }],
+    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'Garden Makeover — GharKaMali' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@gharkamali',
+    creator: '@gharkamali',
+    title: 'Garden & Balcony Makeover Services — GharKaMali',
+    description: 'Transform your balcony or garden with expert design and plant care.',
+    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'Garden Makeover — GharKaMali' }],
   },
 };
 

@@ -160,9 +160,6 @@ export const initiatePayment = (b: any) =>
 export const getPayments = (page?: number, limit?: number) =>
   req(`/payments/my${qs({ page, limit })}`);
 
-export const walletTopup = (amount: number, geofence_id?: number) =>
-  req('/payments/wallet-topup', { method: 'POST', body: JSON.stringify({ amount, geofence_id }) });
-
 // ─── PLANTOPEDIA ──────────────────────────────────────────────────────────────
 export const identifyPlant = (form: FormData) =>
   req('/plants/identify', { method: 'POST', body: form });

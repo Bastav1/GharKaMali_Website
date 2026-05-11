@@ -2,14 +2,30 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
-  description: 'Book a professional mali visit starting ₹349. Choose your date, plants, and location. Expert gardeners in Noida & Greater Noida.',
-  keywords: ['book gardener noida', 'mali booking', 'plant care visit', 'book gardening service'],
+  description: 'Book a professional mali visit starting ₹349. Choose your date, plants, and location. Expert gardeners in Noida & Greater Noida. Instant confirmation!',
+  keywords: [
+    'book gardener noida', 'mali booking', 'plant care visit', 'book gardening service',
+    'online mali booking', 'book plant care', 'gardener at home noida', 'hire mali noida',
+    'book garden expert', 'same day gardener booking',
+  ],
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' } },
   alternates: { canonical: 'https://gharkamali.com/book' },
   openGraph: {
-    title: 'Book a Gardener Visit — GharKaMali ₹349',
-    description: 'Professional plant care at your doorstep. Book in 60 seconds.',
+    type: 'website',
+    locale: 'en_IN',
+    siteName: 'GharKaMali',
+    title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
+    description: 'Professional plant care at your doorstep. Book in 60 seconds. Expert gardeners in Noida & Greater Noida.',
     url: 'https://gharkamali.com/book',
-    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630 }],
+    images: [{ url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'Book a Gardener — GharKaMali' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@gharkamali',
+    creator: '@gharkamali',
+    title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
+    description: 'Professional plant care at your doorstep. Book in 60 seconds.',
+    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'Book a Gardener — GharKaMali' }],
   },
 };
 

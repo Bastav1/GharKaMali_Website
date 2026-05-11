@@ -257,7 +257,7 @@ function BookFlow() {
       {
         '@type': 'Question',
         name: 'Can I cancel or reschedule my gardening booking?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can reschedule or cancel your booking from the My Bookings section in your account. Cancellations made 24 hours in advance are eligible for a full refund to your wallet.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can reschedule or cancel your booking from the My Bookings section in your account. Cancellations made 24 hours in advance are eligible for a full refund to your original payment method.' },
       },
       {
         '@type': 'Question',

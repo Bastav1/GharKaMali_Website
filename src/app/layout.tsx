@@ -7,9 +7,40 @@ import SocialProofToast from '@/components/SocialProofToast';
 import NotificationListener from '@/components/NotificationListener';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://gharkamali.com'),
   title: { default: 'GharKaMali — Expert Plant Care at Home | Starting ₹349', template: '%s | GharKaMali' },
   description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
-  keywords: ['gardening', 'garden care', 'plants', 'gardener', 'home garden', 'plant care', 'Noida gardener', 'plant service', 'GharKaMali', 'gardener near me', 'mali near me', 'plant care near me', 'home gardening service', 'garden maintenance near me'],
+  keywords: [
+    'gardening', 'garden care', 'plants', 'gardener', 'home garden', 'plant care',
+    'Noida gardener', 'plant service', 'GharKaMali', 'gardener near me', 'mali near me',
+    'plant care near me', 'home gardening service', 'garden maintenance near me',
+    'mali noida', 'plant care noida', 'balcony garden noida', 'terrace garden noida',
+    'indoor plant care', 'outdoor garden maintenance', 'plant subscription india',
+    'best gardener in noida', 'professional mali', 'home garden service delhi ncr',
+  ],
+  applicationName: 'GharKaMali',
+  authors: [{ name: 'GharKaMali', url: 'https://gharkamali.com' }],
+  generator: 'Next.js',
+  referrer: 'origin-when-cross-origin',
+  category: 'home services',
+  classification: 'Home & Garden Services',
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://gharkamali.com',
+    languages: { 'en-IN': 'https://gharkamali.com' },
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -17,7 +48,10 @@ export const metadata: Metadata = {
     title: 'GharKaMali — Expert Plant Care at Home | Starting ₹349',
     description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
     url: 'https://gharkamali.com',
-    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'GharKaMali — Professional Gardening Service' }],
+    images: [
+      { url: 'https://gharkamali.com/og-image.jpg', width: 1200, height: 630, alt: 'GharKaMali — Professional Gardening Service' },
+      { url: 'https://gharkamali.com/logo.png', width: 512, height: 512, alt: 'GharKaMali Logo' },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -25,10 +59,42 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'GharKaMali — Expert Plant Care at Home | Starting ₹349',
     description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
-    images: ['https://gharkamali.com/logo.png'],
+    images: [{ url: 'https://gharkamali.com/og-image.jpg', alt: 'GharKaMali — Professional Gardening Service' }],
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    other: [{ rel: 'mask-icon', url: '/safari-pinned-tab.svg', color: '#1E7A58' }],
+  },
+  manifest: '/site.webmanifest',
+  appleWebApp: {
+    capable: true,
+    title: 'GharKaMali',
+    statusBarStyle: 'black-translucent',
+  },
+  formatDetection: { email: false, address: false, telephone: false },
+  verification: {
+    google: 'REPLACE_WITH_GOOGLE_SITE_VERIFICATION',
+    other: { 'msvalidate.01': 'REPLACE_WITH_BING_VERIFICATION' },
+  },
+  other: {
+    'geo.region': 'IN-UP',
+    'geo.placename': 'Noida, Uttar Pradesh',
+    'geo.position': '28.5355;77.3910',
+    'ICBM': '28.5355, 77.3910',
+    'rating': 'general',
+    'revisit-after': '3 days',
+    'language': 'English',
+    'copyright': 'GharKaMali',
+    'og:price:amount': '349',
+    'og:price:currency': 'INR',
+    'theme-color': '#1E7A58',
+    'msapplication-TileColor': '#1E7A58',
+    'msapplication-config': '/browserconfig.xml',
   },
 };
 

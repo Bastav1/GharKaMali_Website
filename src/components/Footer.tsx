@@ -27,7 +27,6 @@ const NAV_COLS = [
       { href: '/dashboard', label: 'Dashboard' },
       { href: '/bookings', label: 'My Bookings' },
       { href: '/subscriptions', label: 'Subscriptions' },
-      { href: '/wallet', label: 'Wallet' },
       { href: '/profile', label: 'Profile' },
     ],
   },
