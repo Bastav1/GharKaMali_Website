@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
-import { createComplaint, getMyComplaints, getMyBookings } from '@/lib/api';
+import { createComplaint, getMyComplaints, getMyBookings, getComplaintDepartments } from '@/lib/api';
+import Link from 'next/link';
 
 const TYPES = [
   { value: 'service_quality', label: 'Service Quality', icon: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg> },
@@ -19,10 +20,13 @@ const TYPES = [
 ] as const;
 
 const STATUS_MAP: Record<string, [string, string]> = {
-  open: ['#DBEAFE', '#2563EB'],
-  in_progress: ['#FEF9C3', '#CA8A04'],
+  open: ['#FEE2E2', '#DC2626'],
+  in_progress: ['#DBEAFE', '#2563EB'],
+  awaiting_customer: ['#F3E8FF', '#7E22CE'],
+  in_review: ['#FEF9C3', '#CA8A04'],
   resolved: ['#DCFCE7', '#16A34A'],
   closed: ['#F3F4F6', '#4B5563'],
+  reopened: ['#FFEDD5', '#EA580C'],
 };
 
 export default function ComplaintsPage() {
@@ -32,6 +36,9 @@ export default function ComplaintsPage() {
   const [showForm, setShowForm] = useState(false);
   const [type, setType] = useState<typeof TYPES[number]['value']>('service_quality');
   const [desc, setDesc] = useState('');
+  const [subject, setSubject] = useState('');
+  const [departmentId, setDepartmentId] = useState<number | ''>('');
+  const [files, setFiles] = useState<File[]>([]);
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
 
@@ -39,6 +46,8 @@ export default function ComplaintsPage() {
 
   const { data, isLoading: cLoad } = useQuery({ queryKey: ['complaints'], queryFn: getMyComplaints, enabled: isAuthenticated });
   const complaints: any[] = Array.isArray(data) ? data : (data as any)?.complaints ?? [];
+  const { data: deptsData } = useQuery({ queryKey: ['complaint-depts'], queryFn: getComplaintDepartments, enabled: isAuthenticated });
+  const departments: any[] = Array.isArray(deptsData) ? deptsData : [];
 
   const { data: bookingsData } = useQuery({ queryKey: ['my-bookings-all'], queryFn: () => getMyBookings({ limit: 50 }), enabled: isAuthenticated && showForm });
   const bookings: any[] = Array.isArray((bookingsData as any)?.bookings) ? (bookingsData as any).bookings : Array.isArray(bookingsData) ? bookingsData as any[] : [];
@@ -46,11 +55,19 @@ export default function ComplaintsPage() {
   const createMut = useMutation({
     mutationFn: () => {
       if (!selectedBookingId) throw new Error('Please select the order this complaint is about');
-      return createComplaint({ type, description: desc, priority, booking_id: selectedBookingId, geofence_id: (useAuth.getState().user as any)?.geofence_id });
+      return createComplaint({
+        type, description: desc, priority,
+        subject: subject.trim() || undefined,
+        department_id: departmentId ? Number(departmentId) : undefined,
+        booking_id: selectedBookingId,
+        attachments: files,
+        geofence_id: (useAuth.getState().user as any)?.geofence_id,
+      });
     },
     onSuccess: () => {
       toast.success('Complaint filed. We\'ll respond within 24 hours.');
       setShowForm(false); setDesc(''); setType('service_quality'); setSelectedBookingId(null);
+      setSubject(''); setDepartmentId(''); setFiles([]);
       qc.invalidateQueries({ queryKey: ['complaints'] });
     },
     onError: (e: any) => toast.error(e.message),
@@ -108,7 +125,7 @@ export default function ComplaintsPage() {
                   const [bg, color] = STATUS_MAP[c.status] ?? ['#F3F4F6', '#4B5563'];
                   const typeInfo = TYPES.find(t => t.value === c.type);
                   return (
-                    <div key={c.id} className="card complaint-ticket-card" style={{
+                    <Link key={c.id} href={`/complaints/${c.id}`} className="card complaint-ticket-card" style={{
                       padding: '24px',
                       animation: `fade-up 0.5s var(--ease) ${i * 60}ms both`,
                       borderRadius: 24,
@@ -116,7 +133,9 @@ export default function ComplaintsPage() {
                       flexDirection: 'row',
                       flexWrap: 'wrap',
                       gap: 16,
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
                     }}>
                       <div style={{
                         width: 48, height: 48,
@@ -132,9 +151,9 @@ export default function ComplaintsPage() {
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                           <h3 style={{ fontWeight: 900, fontSize: '1.1rem', color: 'var(--forest)', margin: 0, fontFamily: 'var(--font-display)' }}>
-                            {typeInfo?.label ?? c.type}
+                            {c.subject || typeInfo?.label || c.type}
                           </h3>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--sage)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>#{c.id}</span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--sage)', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{c.ticket_number || `#${c.id}`}</span>
                         </div>
                         <p style={{ fontSize: '0.9rem', color: 'var(--sage)', margin: 0, fontWeight: 500, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {c.description}
@@ -163,7 +182,7 @@ export default function ComplaintsPage() {
                           <span style={{ color: 'var(--forest)', fontWeight: 500 }}>{c.resolution}</span>
                         </div>
                       )}
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -233,13 +252,40 @@ export default function ComplaintsPage() {
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: 28 }}>
+            <div className="form-group" style={{ marginBottom: 16 }}>
+              <label className="form-label">Subject (optional)</label>
+              <input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Short title for your ticket"
+                style={{ width: '100%', background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 14, padding: '12px 16px', fontSize: '0.95rem', color: 'var(--forest)', outline: 'none' }} />
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 16 }}>
+              <label className="form-label">Department</label>
+              <select value={departmentId} onChange={e => setDepartmentId(e.target.value ? Number(e.target.value) : '')}
+                style={{ width: '100%', background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 14, padding: '12px 16px', fontSize: '0.95rem', color: 'var(--forest)', outline: 'none' }}>
+                <option value="">— Auto-route —</option>
+                {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 16 }}>
               <label className="form-label">Describe the Issue <span style={{ color: 'var(--gold)' }}>*</span></label>
               <textarea placeholder="Please provide as much detail as possible..." value={desc} onChange={e => setDesc(e.target.value)}
                 style={{ width: '100%', minHeight: 120, resize: 'vertical', background: '#fff', border: '1px solid var(--border-mid)', borderRadius: 18, padding: '18px', color: 'var(--forest)', outline: 'none', transition: 'all 0.3s var(--ease)', fontSize: '1rem', fontWeight: 500 }}
                 onFocus={e => { e.currentTarget.style.borderColor = 'var(--forest)'; e.currentTarget.style.boxShadow = '0 0 0 4px var(--border)'; }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'var(--border-mid)'; e.currentTarget.style.boxShadow = 'none'; }}
               />
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 28 }}>
+              <label className="form-label">Attachments (optional — images, PDF, docs)</label>
+              <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                onChange={e => setFiles(Array.from(e.target.files || []))}
+                style={{ width: '100%', padding: '8px 0', fontSize: '0.9rem' }} />
+              {files.length > 0 && (
+                <div style={{ marginTop: 8, fontSize: '0.8rem', color: 'var(--sage)' }}>
+                  {files.length} file(s) ready to upload
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: 12 }}>
