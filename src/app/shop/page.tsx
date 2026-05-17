@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -30,6 +30,7 @@ const CATEGORY_ICONS: Record<string, () => JSX.Element> = {
 
 function ShopPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [cat, setCat] = useState('All');
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [products, setProducts] = useState<any[]>([]);
@@ -166,27 +167,69 @@ function ShopPageInner() {
       <Navbar/>
       <div style={{ background: 'var(--bg)', paddingTop: 'var(--nav-h)', minHeight: '100svh' }}>
 
-        {/* ── FUTURISTIC HERO ── */}
-        <div ref={heroRef} style={{ position: 'relative', height: 'clamp(320px,45vw,480px)', overflow: 'hidden', background: 'rgb(3,16,8)' }}>
-          <canvas id="shopHeroCanvas" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}/>
-          {/* Glowing radial */}
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(3,65,26,0.35) 0%, transparent 70%)', pointerEvents: 'none' }}/>
-          {/* Grid overlay */}
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(3,65,26,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(3,65,26,0.08) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }}/>
+        {/* ── HERO ── compact when a search or non-default filter is active */}
+        {(() => {
+          const compact = !!search.trim() || cat !== 'All';
+          return (
+            <div ref={heroRef}
+              style={{
+                position: 'relative',
+                height: compact ? 'clamp(96px, 14vw, 140px)' : 'clamp(240px, 32vw, 360px)',
+                overflow: 'hidden',
+                background: 'rgb(3,16,8)',
+                transition: 'height 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}>
+              <canvas id="shopHeroCanvas" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}/>
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(3,65,26,0.35) 0%, transparent 70%)', pointerEvents: 'none' }}/>
+              <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(3,65,26,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(3,65,26,0.08) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }}/>
 
-          <div className="container shop-hero-content" style={{ position: 'relative', zIndex: 5, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 16 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 99, padding: '6px 18px' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c9a84c', animation: 'badgePulse 2s infinite' }}/>
-              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'rgba(201,168,76,0.9)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Plant Store</span>
+              <div className="container shop-hero-content" style={{
+                position: 'relative', zIndex: 5, height: '100%',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                textAlign: 'center', gap: compact ? 6 : 16,
+              }}>
+                {compact ? (
+                  <>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.5)', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.18em' }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c9a84c' }}/>
+                      Plant Store
+                    </div>
+                    <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.2rem, 3vw, 1.8rem)', fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', margin: 0, lineHeight: 1.2 }}>
+                      {search.trim()
+                        ? <>Results for <span style={{ color: '#c9a84c' }}>“{search.trim()}”</span></>
+                        : <>{cat}</>}
+                    </h1>
+                    {!loading && (
+                      <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.78rem', fontWeight: 600 }}>
+                        {products.length} {products.length === 1 ? 'item' : 'items'} found
+                        {(search.trim() || cat !== 'All') && (
+                          <button onClick={() => { setSearch(''); setCat('All'); router.replace('/shop'); }}
+                            style={{ marginLeft: 12, background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.35)', color: '#c9a84c', padding: '3px 12px', borderRadius: 99, fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                            Clear filters
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 99, padding: '6px 18px' }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c9a84c', animation: 'badgePulse 2s infinite' }}/>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'rgba(201,168,76,0.9)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Plant Store</span>
+                    </div>
+                    <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem, 5vw, 3.4rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', lineHeight: 0.95, textShadow: '0 0 60px rgba(3,65,26,0.8)', margin: 0 }}>
+                      Everything your<br/><span style={{ color: '#c9a84c', fontStyle: 'normal' }}>garden needs</span>
+                    </h1>
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 'clamp(0.85rem, 1.3vw, 1rem)', maxWidth: 480, lineHeight: 1.6, margin: 0 }}>
+                      Premium plants, quality tools, organic fertilizers — curated by expert plant experts
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem,6vw,4.5rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', lineHeight: 0.95, textShadow: '0 0 60px rgba(3,65,26,0.8)' }}>
-              Everything your<br/><span style={{ color: '#c9a84c', fontStyle: 'normal' }}>garden needs</span>
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 'clamp(0.9rem,1.5vw,1.1rem)', maxWidth: 480, lineHeight: 1.7 }}>
-              Premium plants, quality tools, organic fertilizers — curated by expert plant experts
-            </p>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* ── STICKY CART BAR ── */}
         {mounted && cartCount > 0 && (
@@ -202,9 +245,12 @@ function ShopPageInner() {
           </div>
         )}
 
-        <div className="container" style={{ paddingTop: 'clamp(44px, 10vw, 72px)', paddingBottom: 80 }}>
+        <div className="container" style={{
+          paddingTop: (search.trim() || cat !== 'All') ? 'clamp(16px, 3vw, 24px)' : 'clamp(28px, 6vw, 48px)',
+          paddingBottom: 80,
+        }}>
           {/* Filter bar: Search + Category tabs + Sort */}
-          <div className="cat-tabs-row" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 32, flexWrap: 'wrap', marginTop: 'clamp(12px, 3vw, 24px)' }}>
+          <div className="cat-tabs-row" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', marginTop: 0 }}>
             {/* Row 1: Search + Sort */}
             <div style={{ display: 'flex', gap: 10, flex: '1 1 100%', alignItems: 'center' }} className="search-sort-row">
               <div style={{ position: 'relative', flex: 1 }}>
@@ -310,11 +356,18 @@ function ShopPageInner() {
                         </div>
                         <h3 style={{ fontSize: '1.15rem', color: 'var(--forest)', fontWeight: 900, marginBottom: 8, letterSpacing: '-0.01em', lineHeight: 1.2 }}>{p.name}</h3>
                         
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                              {[1,2,3,4,5].map(n => <IcStar key={n}/>)}
-                           </div>
-                           <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--forest)' }}>{Number(p.rating || 4.5).toFixed(1)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, minHeight: 18 }}>
+                           {Number(p.rating) > 0 ? (
+                             <>
+                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  {[1,2,3,4,5].map(n => <IcStar key={n}/>)}
+                               </div>
+                               <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--forest)' }}>{Number(p.rating).toFixed(1)}</span>
+                               {p.review_count > 0 && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>({p.review_count})</span>}
+                             </>
+                           ) : (
+                             <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', fontStyle: 'italic' }}>Not rated yet</span>
+                           )}
                         </div>
                       </div>
                     </Link>
