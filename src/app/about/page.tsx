@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import { SERVING_AREAS } from '@/lib/areas';
 
 const WA_URL = 'https://wa.me/919876543210?text=Hi%20GharKaMali!%20I%20want%20to%20know%20more.';
 
@@ -140,7 +141,7 @@ export default function AboutPage() {
       <Navbar transparent />
 
       {/* ══ HERO ══ */}
-      <section style={{ paddingTop: 'calc(var(--nav-h) + 80px)', paddingBottom: 100, background: 'var(--forest)', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ paddingTop: 'calc(var(--nav-h) + clamp(28px, 4vw, 48px))', paddingBottom: 'clamp(36px, 5vw, 60px)', background: 'var(--forest)', position: 'relative', overflow: 'hidden' }}>
         {/* decorative orbs */}
         <div style={{ position: 'absolute', top: -120, right: -100, width: 520, height: 520, borderRadius: '50%', background: 'radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 65%)', pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', bottom: -80, left: -80, width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -148,14 +149,14 @@ export default function AboutPage() {
         <div style={{ position: 'absolute', top: '20%', right: '8%', opacity: 0.07, transform: 'rotate(30deg) scale(6)', color: '#fff', pointerEvents: 'none' }}><IcLeaf /></div>
 
         <div className="container about-hero" style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 760 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 99, padding: '6px 20px', marginBottom: 28 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 99, padding: '5px 16px', marginBottom: 14 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c9a84c', display: 'inline-block', animation: 'pulse 2s ease infinite' }} />
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'rgba(201,168,76,0.9)', textTransform: 'uppercase', letterSpacing: '0.22em' }}>Our Story</span>
+            <span style={{ fontSize: '0.66rem', fontWeight: 800, color: 'rgba(201,168,76,0.9)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Our Story</span>
           </div>
-          <h1 style={{ fontSize: 'clamp(2.4rem,6vw,4.2rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 22 }}>
+          <h1 style={{ fontSize: 'clamp(1.8rem, 4.5vw, 3rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 12 }}>
             We make plant care<br /><span style={{ color: '#c9a84c' }}>simple & joyful</span>
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 'clamp(1rem,1.8vw,1.15rem)', marginBottom: 44, lineHeight: 1.85 }}>
+          <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 'clamp(0.88rem, 1.3vw, 1rem)', marginBottom: 22, lineHeight: 1.7, maxWidth: 620, marginInline: 'auto' }}>
             GharKaMali was born from a simple belief — every home deserves a thriving green space, and every plant parent deserves expert help to make it happen.
           </p>
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -315,12 +316,19 @@ export default function AboutPage() {
             <IcMap />
             <span style={{ fontSize: 'clamp(1rem,2vw,1.2rem)', fontWeight: 800, color: 'var(--forest)' }}>Noida & Greater Noida</span>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', maxWidth: 700, margin: '0 auto' }}>
-            {['ATS Pristine', 'Gaur City', 'Supertech Capetown', 'Godrej Properties', 'Mahagun Moderne', 'Sikka Karmic Greens', 'Amrapali Silicon City', 'Sector 62', 'Sector 78', 'Sector 137', '+ 45 more societies'].map((loc, i) => (
-              <span key={i} style={{ padding: '8px 18px', background: i === 10 ? 'var(--forest)' : 'var(--cream)', color: i === 10 ? '#fff' : 'var(--forest)', borderRadius: 99, fontSize: '0.82rem', fontWeight: 700, border: '1.5px solid var(--border-gold)' }}>
-                {loc}
-              </span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', maxWidth: 760, margin: '0 auto' }}>
+            {SERVING_AREAS.slice(0, 10).map((a) => (
+              <Link key={a.slug} href={`/${a.slug}`}
+                style={{ padding: '8px 18px', background: 'var(--cream)', color: 'var(--forest)', borderRadius: 99, fontSize: '0.82rem', fontWeight: 700, border: '1.5px solid var(--border-gold)', textDecoration: 'none', transition: 'transform 0.2s, background 0.2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--forest)'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--cream)'; (e.currentTarget as HTMLElement).style.color = 'var(--forest)'; }}
+              >
+                {a.name}
+              </Link>
             ))}
+            <Link href="/about#serve" style={{ padding: '8px 18px', background: 'var(--forest)', color: '#fff', borderRadius: 99, fontSize: '0.82rem', fontWeight: 700, border: '1.5px solid var(--border-gold)', textDecoration: 'none' }}>
+              + {SERVING_AREAS.length - 10}+ more societies
+            </Link>
           </div>
         </div>
       </section>

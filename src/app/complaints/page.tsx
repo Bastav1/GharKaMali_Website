@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
 import { createComplaint, getMyComplaints, getComplaintDepartments } from '@/lib/api';
+import { v, firstError } from '@/lib/validators';
 import Link from 'next/link';
 
 const TYPES = [
@@ -261,7 +262,16 @@ export default function ComplaintsPage() {
 
             <div style={{ display: 'flex', gap: 12 }}>
               <button onClick={() => setShowForm(false)} className="btn btn-outline" style={{ flex: 1, justifyContent: 'center' }}>Cancel</button>
-              <button onClick={() => createMut.mutate()} disabled={!desc.trim() || !bookingId.trim() || createMut.isPending}
+              <button onClick={() => {
+                const err = firstError([
+                  v.enumIn(type, ['service_quality','late_arrival','no_show','rude_behavior','billing','damage','other'], { field: 'type' }),
+                  v.text(desc, { field: 'description', min: 5, max: 2000 }),
+                  v.integer(bookingId, { field: 'booking_id', min: 1 }),
+                  v.text(subject, { field: 'subject', max: 255, optional: true }),
+                ]);
+                if (err) { toast.error(err); return; }
+                createMut.mutate();
+              }} disabled={!desc.trim() || !bookingId.trim() || createMut.isPending}
                 className="btn btn-primary" style={{ flex: 2, justifyContent: 'center', opacity: (!desc.trim() || !bookingId.trim() || createMut.isPending) ? 0.5 : 1 }}>
                 {createMut.isPending ? <><div className="btn-spinner" /> Submitting…</> : 'Submit Ticket'}
               </button>

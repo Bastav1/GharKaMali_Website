@@ -50,6 +50,15 @@ export default function CartDrawer() {
   };
   const [orderNum, setOrderNum] = useState('');
   const [maliBooked, setMaliBooked] = useState<any>(null);
+
+  // GST claim
+  const [applyGst, setApplyGst] = useState(false);
+  const [gstin, setGstin] = useState('');
+  const [bizName, setBizName] = useState('');
+  // products only
+  const productItemsForGst = items.filter(i => !i.type || i.type === 'product');
+  const hasGstableProducts = productItemsForGst.length > 0;
+  const gstinValid = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(gstin.trim().toUpperCase());
   
   // Multi-Address Support
   const [savedLocs, setSavedLocs] = useState<any[]>([]);
@@ -97,11 +106,14 @@ export default function CartDrawer() {
         finalLng = parseFloat(loc.longitude);
       }
     } else {
-      if (!addrF.roomNo.trim() || !addrF.building.trim() || !addrF.city.trim() || !addrF.pincode.trim()) {
-        toast.error('Please fill in all address fields');
-        return;
-      }
-      if (addrF.pincode.length !== 6) { toast.error('Please enter a valid 6-digit pincode'); return; }
+      const { v, firstError } = await import('@/lib/validators');
+      const err = firstError([
+        v.text(addrF.roomNo,   { field: 'flat/room number', min: 1, max: 100 }),
+        v.text(addrF.building, { field: 'building', min: 1, max: 255 }),
+        v.text(addrF.city,     { field: 'city', min: 2, max: 80 }),
+        v.pincode(addrF.pincode),
+      ]);
+      if (err) { toast.error(err); return; }
     }
 
     setStep('processing');
@@ -115,6 +127,15 @@ export default function CartDrawer() {
 
       // 1. Process Shop Order if products exist
       if (productItems.length > 0) {
+        // Validate GST inputs if the user opted in
+        if (applyGst) {
+          if (!gstinValid) { toast.error('Please enter a valid 15-character GSTIN'); setStep('address'); return; }
+          if (!bizName.trim()) { toast.error('Business / Legal Name is required for GST claim'); setStep('address'); return; }
+        }
+        const shippingStateForOrder = (useSaved && selectedLocId)
+          ? (savedLocs.find(a => a.id === selectedLocId)?.state || addrF.state)
+          : addrF.state;
+
         orderResponse = await createOrder({
           items: productItems.map(i => ({ product_id: i.id, quantity: i.qty })),
           shipping_address: finalAddress,
@@ -122,7 +143,13 @@ export default function CartDrawer() {
           shipping_pincode: finalPincode,
           geofence_id: userZone?.id,
           service_latitude: finalLat || undefined,
-          service_longitude: finalLng || undefined
+          service_longitude: finalLng || undefined,
+          apply_gst: applyGst,
+          ...(applyGst ? {
+            shipping_state: shippingStateForOrder,
+            billing_gstin: gstin.trim().toUpperCase(),
+            billing_business_name: bizName.trim(),
+          } : {}),
         });
         setOrderNum(orderResponse?.order_number || orderResponse?.txnid || 'GKM-ORD-' + Date.now());
       }
@@ -424,6 +451,66 @@ export default function CartDrawer() {
                   </div>
                 )}
                 </>
+                )}
+
+                {/* ── GST Invoice Claim ─────────────────────────────────── */}
+                {hasGstableProducts && (
+                  <div style={{ border: '1.5px solid var(--border)', borderRadius: 12, padding: 14, background: '#fff' }}>
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={applyGst}
+                        onChange={e => setApplyGst(e.target.checked)}
+                        style={{ width: 18, height: 18, marginTop: 2, accentColor: 'var(--forest)', cursor: 'pointer', flexShrink: 0 }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--forest)' }}>Claim GST Invoice</div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--sage)' }}>For business purchases. We'll issue a tax invoice with your GSTIN.</div>
+                      </div>
+                    </label>
+
+                    {applyGst && (
+                      <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <div>
+                          <label style={{ display: 'block', fontWeight: 700, fontSize: '0.72rem', marginBottom: 4, color: 'var(--forest)' }}>Business / Legal Name *</label>
+                          <input
+                            value={bizName}
+                            onChange={e => setBizName(e.target.value)}
+                            placeholder="e.g. Acme Greens Pvt Ltd"
+                            style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--border)', fontFamily: 'inherit', fontSize: '0.85rem', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontWeight: 700, fontSize: '0.72rem', marginBottom: 4, color: 'var(--forest)' }}>GSTIN *</label>
+                          <input
+                            value={gstin}
+                            onChange={e => setGstin(e.target.value.toUpperCase())}
+                            placeholder="e.g. 09AAAAA0000A1Z5"
+                            maxLength={15}
+                            style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1.5px solid ${gstin && !gstinValid ? '#dc2626' : 'var(--border)'}`, fontFamily: 'monospace', fontSize: '0.85rem', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', letterSpacing: '0.5px' }}
+                          />
+                          {gstin && !gstinValid && (
+                            <div style={{ fontSize: '0.7rem', color: '#dc2626', marginTop: 4, fontWeight: 600 }}>Invalid GSTIN format (15 chars)</div>
+                          )}
+                        </div>
+                        {(() => {
+                          const activeState = (useSaved && selectedLocId)
+                            ? (savedLocs.find(a => a.id === selectedLocId)?.state || addrF.state)
+                            : addrF.state;
+                          const isUP = (activeState || '').toLowerCase().includes('uttar');
+                          return (
+                            <div style={{ padding: 8, borderRadius: 8, fontSize: '0.72rem', fontWeight: 600,
+                              background: isUP ? 'rgba(3,65,26,0.06)' : 'rgba(217,119,6,0.08)',
+                              color: isUP ? 'var(--forest)' : '#92400e' }}>
+                              {isUP
+                                ? 'SGST + CGST will apply (intra-state)'
+                                : `IGST will apply (inter-state — ${activeState || 'state not set'})`}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Map pin — only shown when a gardener service is in the cart */}

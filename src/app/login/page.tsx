@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { sendOtp, verifyOtp } from '@/lib/api';
+import { v, firstError, normalizePhone } from '@/lib/validators';
 import { useAuth } from '@/store/auth';
 
 type Step = 'phone' | 'otp' | 'name';
@@ -44,8 +45,9 @@ function LoginForm() {
   };
 
   const handleSend = async () => {
-    const c = phone.replace(/\D/g, '');
-    if (c.length !== 10) { toast.error('Enter a valid 10-digit number'); return; }
+    const c = normalizePhone(phone);
+    const err = firstError([v.phone(c)]);
+    if (err) { toast.error(err); return; }
     setLoading(true);
     try {
       await sendOtp(c);
@@ -97,8 +99,9 @@ function LoginForm() {
   };
 
   const handleName = async () => {
-    if (!name.trim()) { toast.error('Please enter your name'); return; }
-    const c = phone.replace(/\D/g,'');
+    const nameErr = firstError([v.name(name)]);
+    if (nameErr) { toast.error(nameErr); return; }
+    const c = normalizePhone(phone);
     setLoading(true);
     let location: {lat: number, lng: number} | null = null;
     try {

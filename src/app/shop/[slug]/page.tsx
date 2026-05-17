@@ -32,6 +32,7 @@ export default function ProductDetailPage() {
   const [qty, setQty]           = useState(1);
   const [zoomed, setZoomed]     = useState(false);
   const [zoomPos, setZoomPos]   = useState({ x: 50, y: 50 });
+  const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'faqs' | 'reviews'>('description');
   const imgRef = useRef<HTMLDivElement>(null);
 
   const { addItem } = useCart();
@@ -234,18 +235,27 @@ export default function ProductDetailPage() {
               </h1>
 
               {/* Rating */}
-              {/* Rating */}
-              {Number(product.rating) > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22, paddingBottom: 22, borderBottom: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', gap: 2 }}>
-                    {[1,2,3,4,5].map(n => <IcStar key={n} f={n <= Math.round(Number(product.rating))} />)}
-                  </div>
-                  <span style={{ fontWeight: 800, color: 'var(--forest)', fontSize: '0.95rem' }}>{Number(product.rating).toFixed(1)}</span>
-                  {product.review_count && <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>({product.review_count} reviews)</span>}
-                </div>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22, paddingBottom: 22, borderBottom: '1px solid var(--border)' }}>
+                {Number(product.rating) > 0 ? (
+                  <>
+                    <div style={{ display: 'flex', gap: 2 }}>
+                      {[1,2,3,4,5].map(n => <IcStar key={n} f={n <= Math.round(Number(product.rating))} />)}
+                    </div>
+                    <span style={{ fontWeight: 800, color: 'var(--forest)', fontSize: '0.95rem' }}>{Number(product.rating).toFixed(1)}</span>
+                    {product.review_count > 0 && (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                        ({product.review_count} review{product.review_count === 1 ? '' : 's'})
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, fontStyle: 'italic' }}>
+                    Not rated yet — be the first to review
+                  </span>
+                )}
+              </div>
 
-              {/* Price */}
+              {/* Price + Stock */}
               <div style={{ marginBottom: 24, paddingBottom: 24, borderBottom: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
                   <div style={{ fontSize: 'clamp(1.8rem,3.5vw,2.6rem)', fontWeight: 900, color: 'var(--forest)', lineHeight: 1 }}>
@@ -258,6 +268,29 @@ export default function ProductDetailPage() {
                     </>
                   )}
                 </div>
+                {/* Stock indicator */}
+                {(() => {
+                  const stock = Number(product.stock_quantity ?? 0);
+                  if (stock <= 0) {
+                    return (
+                      <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#fee2e2', color: '#b91c1c', borderRadius: 8, fontSize: '0.8rem', fontWeight: 700 }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#dc2626' }} /> Out of stock
+                      </div>
+                    );
+                  }
+                  if (stock <= 5) {
+                    return (
+                      <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#fef3c7', color: '#92400e', borderRadius: 8, fontSize: '0.8rem', fontWeight: 700 }}>
+                        ⚠️ Only {stock} left in stock
+                      </div>
+                    );
+                  }
+                  return (
+                    <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#dcfce7', color: '#166534', borderRadius: 8, fontSize: '0.8rem', fontWeight: 700 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#16a34a' }} /> In stock — ships in 1–2 days
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Description */}
@@ -315,34 +348,123 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* ── PRODUCT DETAILS TABLE ── */}
-          <div style={{ marginTop: 80, background: '#fff', borderRadius: 24, border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--sh-sm)' }}>
-            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border)', background: 'linear-gradient(135deg,rgba(3,65,26,0.03),transparent)' }}>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--forest)' }}>Product Details</h2>
-            </div>
-            <div style={{ padding: '28px 32px', display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 1fr', gap: 40 }} className="pdt-table-grid">
-              <div>
-                <h3 style={{ fontWeight: 800, color: 'var(--forest)', marginBottom: 14, fontSize: '0.95rem' }}>About this product</h3>
-                <p style={{ color: 'var(--text-2)', fontSize: '0.93rem', lineHeight: 1.85, fontWeight: 500 }}>
-                  {product.description || 'Quality horticultural product curated by GharKaMali experts.'}
-                </p>
+          {/* ── TABBED PRODUCT INFO ── */}
+          {(() => {
+            const stock = Number(product.stock_quantity ?? 0);
+            const features: string[] = Array.isArray(product.features) ? product.features : [];
+            const faqs: { q: string; a: string }[] = Array.isArray(product.faqs) ? product.faqs : [];
+            const tabs = [
+              { id: 'description', label: 'Description' },
+              { id: 'specs', label: 'Specifications' },
+              ...(faqs.length ? [{ id: 'faqs', label: `FAQs (${faqs.length})` }] : []),
+              { id: 'reviews', label: `Reviews${Number(product.review_count) ? ` (${product.review_count})` : ''}` },
+            ] as { id: typeof activeTab; label: string }[];
+
+            const specs: [string, string | number | null][] = [
+              ['Category',     product.category?.name || 'General'],
+              ['Brand',        product.brand || 'GharKaMali'],
+              ['MRP',          mrp > 0 ? `₹${mrp.toLocaleString('en-IN')}` : null],
+              ['Selling Price',`₹${price.toLocaleString('en-IN')}`],
+              ['GST Rate',     product.gst_rate ? `${product.gst_rate}%` : null],
+              ['SKU',          product.sku || product.id ? `GKM-${product.id}` : null],
+              ['Stock',        stock > 0 ? `${stock} units available` : 'Out of stock'],
+              ['Returns',      '7-day no-hassle return'],
+              ['Delivery',     'Free on orders above ₹499'],
+            ];
+
+            return (
+              <div style={{ marginTop: 60, background: '#fff', borderRadius: 24, border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--sh-sm)' }}>
+                {/* Tab bar */}
+                <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', overflowX: 'auto', scrollbarWidth: 'none' }}>
+                  {tabs.map(t => (
+                    <button key={t.id} onClick={() => setActiveTab(t.id)}
+                      style={{
+                        padding: '18px 26px',
+                        background: 'none',
+                        border: 'none',
+                        borderBottom: `3px solid ${activeTab === t.id ? 'var(--forest)' : 'transparent'}`,
+                        color: activeTab === t.id ? 'var(--forest)' : 'var(--text-muted)',
+                        fontWeight: 800,
+                        fontSize: '0.92rem',
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.2s',
+                        marginBottom: -1,
+                      }}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tab body */}
+                <div style={{ padding: 'clamp(20px, 4vw, 40px)' }}>
+                  {activeTab === 'description' && (
+                    <div>
+                      <p style={{ color: 'var(--text-2)', fontSize: '0.96rem', lineHeight: 1.85, fontWeight: 500, marginBottom: features.length ? 24 : 0, whiteSpace: 'pre-wrap' }}>
+                        {product.long_description || product.description || 'Quality horticultural product curated by GharKaMali experts. Detailed care information will be added soon.'}
+                      </p>
+                      {features.length > 0 && (
+                        <>
+                          <h3 style={{ fontWeight: 800, color: 'var(--forest)', margin: '12px 0 14px', fontSize: '1.05rem' }}>Key features</h3>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
+                            {features.map((f, i) => (
+                              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: 'var(--bg-elevated)', borderRadius: 12, border: '1px solid var(--border-gold)' }}>
+                                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(3,65,26,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--forest)', flexShrink: 0 }}><IcCheck /></div>
+                                <span style={{ color: 'var(--text-2)', fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.5 }}>{f}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === 'specs' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4px 28px' }}>
+                      {specs.filter(([, v]) => v !== null && v !== '').map(([label, value]) => (
+                        <div key={label} style={{ display: 'flex', gap: 16, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--forest)', minWidth: 120, fontSize: '0.88rem' }}>{label}</span>
+                          <span style={{ color: 'var(--text-2)', fontSize: '0.88rem', fontWeight: 500 }}>{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeTab === 'faqs' && faqs.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                      {faqs.map((f, i) => (
+                        <details key={i} style={{ padding: 18, background: 'var(--bg-elevated)', borderRadius: 14, border: '1px solid var(--border)', cursor: 'pointer' }}>
+                          <summary style={{ fontWeight: 800, color: 'var(--forest)', fontSize: '0.95rem', listStyle: 'none', cursor: 'pointer' }}>Q. {f.q}</summary>
+                          <p style={{ marginTop: 10, color: 'var(--text-2)', fontSize: '0.9rem', lineHeight: 1.7 }}>A. {f.a}</p>
+                        </details>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeTab === 'reviews' && (
+                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                      {Number(product.review_count) > 0 ? (
+                        <>
+                          <div style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--forest)' }}>{Number(product.rating).toFixed(1)}</div>
+                          <div style={{ display: 'inline-flex', gap: 4, margin: '8px 0' }}>
+                            {[1,2,3,4,5].map(n => <IcStar key={n} f={n <= Math.round(Number(product.rating))} />)}
+                          </div>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Based on {product.review_count} verified review{product.review_count === 1 ? '' : 's'}</p>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ width: 56, height: 56, margin: '0 auto 14px', borderRadius: '50%', background: 'rgba(3,65,26,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--forest)' }}><IcStar f={false} /></div>
+                          <h3 style={{ fontWeight: 800, color: 'var(--forest)', fontSize: '1.1rem', marginBottom: 8 }}>No reviews yet</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: 360, margin: '0 auto' }}>Be the first to share your experience with this product after you receive it.</p>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <h3 style={{ fontWeight: 800, color: 'var(--forest)', marginBottom: 14, fontSize: '0.95rem' }}>Specifications</h3>
-                {[
-                  ['Category',  product.category?.name || 'Garden'],
-                  ['Price',     `₹${price.toLocaleString('en-IN')}`],
-                  ['MRP',       mrp > 0 ? `₹${mrp.toLocaleString('en-IN')}` : null],
-                  ['Status',    'In Stock'],
-                ].filter(s => s[1] !== null).map(([label, value]) => (
-                  <div key={label} style={{ display: 'flex', gap: 16, padding: '9px 0', borderBottom: '1px solid var(--border)' }}>
-                    <span style={{ fontWeight: 700, color: 'var(--forest)', minWidth: 90, fontSize: '0.85rem' }}>{label}</span>
-                    <span style={{ color: 'var(--text-2)', fontSize: '0.85rem' }}>{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+            );
+          })()}
 
 
           {/* ── RELATED PRODUCTS ── */}
@@ -384,11 +506,38 @@ export default function ProductDetailPage() {
       </div>
       <Footer />
 
+      {/* Sticky mobile bottom bar — Add to Cart always reachable */}
+      <div className="pdp-mobile-bar" style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+        background: '#fff', borderTop: '1px solid var(--border)',
+        padding: '10px 14px', display: 'none',
+        boxShadow: '0 -6px 20px rgba(0,0,0,0.06)', gap: 10, alignItems: 'center',
+      }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Price</div>
+          <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--forest)', lineHeight: 1 }}>₹{price.toLocaleString('en-IN')}</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', border: '2px solid var(--border-mid)', borderRadius: 10, overflow: 'hidden' }}>
+          <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ width: 32, height: 36, border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 900, color: 'var(--forest)', cursor: 'pointer' }}>−</button>
+          <div style={{ width: 28, textAlign: 'center', fontWeight: 900, color: 'var(--forest)' }}>{qty}</div>
+          <button onClick={() => setQty(q => q + 1)} style={{ width: 32, height: 36, border: 'none', background: 'none', fontSize: '1.1rem', fontWeight: 900, color: 'var(--forest)', cursor: 'pointer' }}>+</button>
+        </div>
+        <button
+          onClick={handleAddToCart}
+          disabled={Number(product.stock_quantity ?? 1) <= 0}
+          style={{ flex: 1, padding: '12px', background: 'var(--forest)', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: '0.92rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: Number(product.stock_quantity ?? 1) <= 0 ? 0.5 : 1 }}>
+          <IcCart /> Add to Cart
+        </button>
+      </div>
+
       <style jsx global>{`
         @media (max-width: 860px) {
           .pdp-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
           .pdp-info { position: relative !important; top: auto !important; }
           .pdt-table-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+          .pdp-mobile-bar { display: flex !important; }
+          /* leave room for the sticky bar so footer/content not hidden */
+          body { padding-bottom: 80px; }
         }
         @media (max-width: 560px) {
           .pdp-grid > div:last-child > div:nth-child(7) { flex-direction: column; }

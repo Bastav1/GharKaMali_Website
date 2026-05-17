@@ -6,11 +6,35 @@ import WhatsAppFloat from '@/components/WhatsAppFloat';
 import SocialProofToast from '@/components/SocialProofToast';
 import NotificationListener from '@/components/NotificationListener';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://gharkamali.com';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: 'GharKaMali — Expert Plant Care at Home | Starting ₹349', template: '%s | GharKaMali' },
   description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
   keywords: ['gardening', 'garden care', 'plants', 'gardener', 'home garden', 'plant care', 'Noida gardener', 'plant service', 'GharKaMali'],
-  openGraph: { type: 'website', locale: 'en_IN', siteName: 'GharKaMali' },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    siteName: 'GharKaMali',
+    url: SITE_URL,
+    title: 'GharKaMali — Expert Plant Care at Home | Starting ₹349',
+    description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'GharKaMali — Professional Plant Care',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GharKaMali — Expert Plant Care at Home | Starting ₹349',
+    description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida.',
+    images: ['/logo.png'],
+  },
   icons: {
     icon: '/favicon.ico',
   },

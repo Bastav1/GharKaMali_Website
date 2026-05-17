@@ -5,6 +5,8 @@ import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
 import { submitContact } from '@/lib/api';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import { v, firstError, normalizePhone } from '@/lib/validators';
+import toast from 'react-hot-toast';
 
 export default function ContactPage() {
   const { user } = useAuth();
@@ -16,16 +18,25 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!form.name || !form.message) {
-      setError('Name and message are required');
-      return;
-    }
+    const err = firstError([
+      v.name(form.name),
+      v.email(form.email),
+      v.phone(form.phone, { optional: true }),
+      v.text(form.message, { field: 'message', min: 5, max: 2000 }),
+    ]);
+    if (err) { setError(err); toast.error(err); return; }
     setSubmitting(true);
     try {
-      await submitContact({ ...form, geofence_id: user?.geofence_id });
+      await submitContact({
+        ...form,
+        phone: form.phone ? normalizePhone(form.phone) : form.phone,
+        geofence_id: user?.geofence_id,
+      });
       setSubmitted(true);
+      toast.success('Thanks — we\'ll be in touch soon!');
     } catch (err: any) {
       setError(err?.message || 'Failed to submit. Please try again.');
+      toast.error(err?.message || 'Failed to submit');
     }
     setSubmitting(false);
   };
@@ -33,13 +44,12 @@ export default function ContactPage() {
   return (
     <SmoothScrollProvider>
       <Navbar />
-      <section style={{ paddingTop: 'clamp(120px, 15vw, 180px)', paddingBottom: 'clamp(60px, 8vw, 120px)', minHeight: '80vh' }}>
+      <section style={{ paddingTop: 'calc(var(--nav-h) + clamp(24px, 3vw, 40px))', paddingBottom: 'clamp(48px, 6vw, 80px)' }}>
         <div className="container" style={{ maxWidth: 720, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 'clamp(32px, 5vw, 56px)' }}>
-            <div className="section-divider-line" />
+          <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 3.5vw, 40px)' }}>
             <span className="overline overline-dot">Get In Touch</span>
-            <h1 className="display-2" style={{ color: 'var(--forest)', marginTop: 12 }}>Contact Us</h1>
-            <p style={{ color: 'var(--text-2)', fontSize: '1.05rem', maxWidth: 520, margin: '12px auto 0', lineHeight: 1.7 }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.7rem, 4vw, 2.6rem)', fontWeight: 900, color: 'var(--forest)', marginTop: 8, marginBottom: 0, letterSpacing: '-0.02em' }}>Contact Us</h1>
+            <p style={{ color: 'var(--text-2)', fontSize: '0.95rem', maxWidth: 520, margin: '10px auto 0', lineHeight: 1.6 }}>
               Have a question about our gardening services? We'd love to hear from you!
             </p>
           </div>

@@ -164,7 +164,9 @@ const AppDownloadPopup = () => {
     <div className="app-popup-overlay" onClick={() => setShow(false)}>
       <div className="app-popup-box" onClick={e => e.stopPropagation()}>
         <button className="close" onClick={() => setShow(false)}>×</button>
-        <div className="app-popup-icon"><IcLeaf /></div>
+        <div className="app-popup-icon" style={{ background: '#fff', padding: 8, overflow: 'hidden' }}>
+          <img src="/logo.png" alt="GharKaMali" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        </div>
         <h3 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--forest)', marginBottom: 12 }}>Join the Green Club</h3>
         <p style={{ color: 'var(--text-2)', fontSize: '1rem', lineHeight: 1.6, marginBottom: 32, fontWeight: 500 }}>
           Download the GharKaMali app to track your plant growth, get digital health reports, and manage bookings instantly.
@@ -650,8 +652,9 @@ export default function HomePage() {
                 {/* Row 1: Typewriter */}
                 <TypeWriter words={dynamicWords} />
 
-                {/* Row 2: Brand + Tag — inline so "hai na!" never wraps alone */}
-                <div style={{ display: 'block', lineHeight: 1.1 }}>
+                {/* Row 2: Brand + Tag — inline so "hai na!" never wraps alone.
+                    Rendered as <h1> for SEO (one and only H1 on the page). */}
+                <h1 style={{ display: 'block', lineHeight: 1.1, margin: 0, padding: 0, fontWeight: 900 }}>
                   <span className="typewriter-gradient" style={{
                     fontSize: 'clamp(2rem, 8vw, 4.2rem)',
                     fontWeight: 900,
@@ -671,7 +674,7 @@ export default function HomePage() {
                   }}>
                     hai na!
                   </span>
-                </div>
+                </h1>
               </div>
 
               <p className="hero-subtitle" style={{ maxWidth: 580, marginBottom: 44, fontWeight: 500, color: 'rgba(255,255,255,0.92)', textShadow: '0 2px 8px rgba(0,0,0,0.4)', fontSize: 'clamp(1rem, 1.4vw, 1.18rem)', lineHeight: 1.8 }}>
@@ -811,7 +814,13 @@ export default function HomePage() {
 
             <div className="prof-gardening-visual s-reveal s-reveal-d2" style={{ position: 'relative' }}>
               <div style={{ position: 'relative', borderRadius: 32, overflow: 'hidden', boxShadow: 'var(--sh-xl)', border: '8px solid #fff', transform: 'rotate(1.5deg)' }}>
-                <img src="https://images.unsplash.com/photo-1598902108854-10e335adac99?w=1200&h=800&fit=crop" alt="Balcony Transformation" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                <img
+                  src="https://images.unsplash.com/photo-1598902108854-10e335adac99?w=1200&h=800&fit=crop"
+                  alt="Balcony Transformation"
+                  loading="lazy"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/img-2.jpeg'; }}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
                 <div style={{ position: 'absolute', top: 20, left: 20, background: 'rgba(3,65,26,0.85)', color: '#fff', padding: '8px 20px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 800, backdropFilter: 'blur(12px)', boxShadow: 'var(--sh-sm)' }}>TRANSFORMATION COMPLETE</div>
               </div>
 
@@ -1161,7 +1170,13 @@ export default function HomePage() {
                       transition: 'transform 0.3s ease'
                     }}>
                       <div style={{ position: 'relative', width: '100%', height: 260, borderRadius: 16, overflow: 'hidden', marginBottom: 16 }}>
-                        <img src={p.thumbnail || p.images?.[0] || 'https://images.unsplash.com/photo-1597055110188-591ff1130d2e?w=600&h=600&fit=crop'} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img
+                          src={p.thumbnail || p.images?.[0] || '/img-1.jpeg'}
+                          alt={p.name}
+                          loading="lazy"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/img-1.jpeg'; }}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
                         <div style={{ position: 'absolute', top: 12, right: 12, background: 'var(--forest)', color: '#fff', fontSize: '0.75rem', padding: '6px 12px', borderRadius: 99, fontWeight: 800, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>₹{p.price}</div>
                       </div>
                       <div style={{ padding: '0 4px' }}>
@@ -1273,7 +1288,13 @@ export default function HomePage() {
               {blogs?.length > 0 ? blogs.slice(0, 3).map((b: any, bi: number) => (
                 <Link key={b._id} href={`/blogs/${b.slug}`} className={`s-reveal s-reveal-d${bi + 1}`} style={{ display: 'flex', flexDirection: 'column', gap: 18, textDecoration: 'none' }}>
                   <div className="blog-img-zoom" style={{ position: 'relative', aspectRatio: '16/10' }}>
-                    <img src={b.thumbnail || 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&h=500&fit=crop'} alt={b.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img
+                      src={b.thumbnail || '/img-3.jpeg'}
+                      alt={b.title}
+                      loading="lazy"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/img-3.jpeg'; }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                     <div style={{ position: 'absolute', top: 16, left: 16, background: 'rgba(255,255,255,0.92)', padding: '6px 16px', borderRadius: 99, fontSize: '0.72rem', fontWeight: 800, color: 'var(--forest)', backdropFilter: 'blur(8px)' }}>{b.category?.name || 'Expert Tips'}</div>
                   </div>
                   <div style={{ padding: '0 8px' }}>

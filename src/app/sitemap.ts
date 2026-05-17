@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { SERVING_AREAS } from '@/lib/areas';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://gkm.gobt.in/api';
 
@@ -14,7 +15,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/shop`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${base}/blogs`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 },
     { url: `${base}/plantopedia`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/careers`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/green-makeover`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${base}/complaints`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
   ];
+
+  // Service area pages (one per society/sector)
+  const areaPages: MetadataRoute.Sitemap = SERVING_AREAS.map(a => ({
+    url: `${base}/${a.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
 
   // Dynamic: City pages
   let cityPages: MetadataRoute.Sitemap = [];
@@ -44,5 +58,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch (e) { /* API down — skip */ }
 
-  return [...staticPages, ...cityPages, ...blogPages];
+  return [...staticPages, ...areaPages, ...cityPages, ...blogPages];
 }
