@@ -81,15 +81,21 @@ export const getPreviousGardeners = () => req('/bookings/previous-gardeners');
 export const checkGardenerAvailability = (date: string, gardenerId?: number, zoneId?: number) =>
   req(`/bookings/check-availability${qs({ date, gardener_id: gardenerId, geofence_id: zoneId })}`, { auth: false });
 
+// Instant booking availability — checks the configured ETA and whether any
+// gardener in the zone is free to start "right now".
+export const checkInstantAvailability = (zoneId: number) =>
+  req(`/bookings/instant-availability${qs({ geofence_id: zoneId })}`, { auth: false });
+
 // ─── BOOKINGS (customer) ──────────────────────────────────────────────────────
 export const createBooking = (b: {
   plan_id?: number;
-  geofence_id: number; scheduled_date: string; scheduled_time?: string;
+  geofence_id: number; scheduled_date?: string; scheduled_time?: string;
   service_address: string; service_latitude: number; service_longitude: number;
   plant_count?: number; preferred_gardener_id?: number; customer_notes?: string;
   addons?: { addon_id: number; quantity: number }[];
   addon_ids?: { addon_id: number; quantity: number }[];
   total_amount?: number;
+  is_instant?: boolean;
 }) => req('/bookings', { method: 'POST', body: JSON.stringify(b) });
 
 export const getMyBookings = (p?: { status?: string; page?: number; limit?: number }) =>

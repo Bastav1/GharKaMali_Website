@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/store/auth';
 import { useCart } from '@/store/cart';
-import { checkServiceability, getPlans, getAddons, createBooking, createSubscription, initiatePayment, getPreviousGardeners, checkGardenerAvailability, addBookingAddons } from '@/lib/api';
+import { checkServiceability, getPlans, getAddons, createBooking, createSubscription, initiatePayment, getPreviousGardeners, checkGardenerAvailability, checkInstantAvailability, addBookingAddons } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from '@/store/location';
 const AddressPicker = dynamic(() => import('@/components/AddressPicker'), { ssr: false });
@@ -78,6 +78,11 @@ function BookFlow() {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [slotsLoaded, setSlotsLoaded] = useState(false);
   const [noGardenersInZone, setNoGardenersInZone] = useState(false);
+  // Instant vs scheduled — only meaningful for on-demand bookings.
+  // 'instant' → server picks today + (now + ETA). 'schedule' → user picks date + slot.
+  const [bookingMode, setBookingMode] = useState<'instant' | 'schedule'>('instant');
+  const [instantInfo, setInstantInfo] = useState<{ available: boolean; eta_minutes: number; gardener_count?: number; reason?: string | null } | null>(null);
+  const [checkingInstant, setCheckingInstant] = useState(false);
 
   const { data: plansRaw } = useQuery({ queryKey: ['plans'], queryFn: getPlans });
   const { data: addonsRaw } = useQuery({ queryKey: ['addons'], queryFn: getAddons });
@@ -145,8 +150,8 @@ function BookFlow() {
   const isSubscriptionPlan = selectedPlan?.plan_type === 'subscription';
 
   const handleFinish = async () => {
-    if (!form.scheduled_date && !isSubscriptionPlan) { 
-      toast.error('Please select a preferred visit date'); return; 
+    if (!isSubscriptionPlan && bookingMode === 'schedule' && !form.scheduled_date) {
+      toast.error('Please select a preferred visit date'); return;
     }
     setSubmitting(true);
     try {
@@ -180,11 +185,25 @@ function BookFlow() {
         toast.success('Subscription created successfully!');
         router.push('/subscriptions');
       } else {
-        res = await createBooking({
-          ...payload,
-          scheduled_date: form.scheduled_date,
-          scheduled_time: form.scheduled_time,
-        });
+        const isInstant = bookingMode === 'instant';
+        try {
+          res = await createBooking({
+            ...payload,
+            is_instant: isInstant,
+            // Server ignores these for instant; safe to omit.
+            ...(isInstant ? {} : { scheduled_date: form.scheduled_date, scheduled_time: form.scheduled_time }),
+          });
+        } catch (e: any) {
+          // Instant slot taken / no gardener free → push to scheduled mode.
+          if (isInstant && (e?.status === 409 || e?.data?.no_instant_slot)) {
+            setBookingMode('schedule');
+            setActiveStep(4);
+            setSubmitting(false);
+            toast.error(e?.message || 'No gardener free right now. Pick a later slot.');
+            return;
+          }
+          throw e;
+        }
         if (form.addons.length > 0) {
           try {
             await addBookingAddons(res.id, form.addons.map(a => ({ addon_id: a.addon_id, quantity: a.quantity })));
@@ -215,6 +234,25 @@ function BookFlow() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalLat, globalLng]);
+
+  // Fetch instant availability whenever zone changes (on-demand only).
+  useEffect(() => {
+    if (!zone?.id || isSubscriptionPlan) { setInstantInfo(null); return; }
+    setCheckingInstant(true);
+    checkInstantAvailability(zone.id)
+      .then((res: any) => setInstantInfo(res))
+      .catch(() => setInstantInfo({ available: false, eta_minutes: 0 }))
+      .finally(() => setCheckingInstant(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zone?.id, isSubscriptionPlan]);
+
+  // If instant is disabled OR no gardener is free, force schedule mode.
+  useEffect(() => {
+    if (!instantInfo) return;
+    if (bookingMode === 'instant' && (instantInfo.eta_minutes <= 0 || !instantInfo.available)) {
+      setBookingMode('schedule');
+    }
+  }, [instantInfo, bookingMode]);
 
   useEffect(() => {
     if (form.scheduled_date && zone?.id) {
@@ -447,6 +485,79 @@ function BookFlow() {
                 {activeStep === 4 && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ paddingBottom: 40, borderTop: '1px solid var(--border-gold)', paddingTop: 32 }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                      {/* INSTANT vs SCHEDULE toggle (on-demand only) */}
+                      {instantInfo && instantInfo.eta_minutes > 0 && (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                          <button
+                            type="button"
+                            onClick={() => setBookingMode('instant')}
+                            disabled={!instantInfo.available}
+                            style={{
+                              padding: 20, borderRadius: 20, textAlign: 'left',
+                              border: `2px solid ${bookingMode === 'instant' ? 'var(--forest)' : 'var(--border)'}`,
+                              background: bookingMode === 'instant' ? 'var(--forest)' : '#fff',
+                              color: bookingMode === 'instant' ? '#fff' : 'var(--forest)',
+                              opacity: instantInfo.available ? 1 : 0.5,
+                              cursor: instantInfo.available ? 'pointer' : 'not-allowed',
+                              boxShadow: bookingMode === 'instant' ? '0 8px 24px rgba(3,65,26,0.18)' : 'none',
+                              transition: 'all 0.2s',
+                            }}
+                          >
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 99,
+                              background: bookingMode === 'instant' ? 'rgba(255,255,255,0.15)' : 'rgba(3,65,26,0.08)',
+                              fontSize: '0.72rem', fontWeight: 800, marginBottom: 10 }}>
+                              <span>⚡</span><span>{instantInfo.eta_minutes} min</span>
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: 4 }}>Instant</div>
+                            <div style={{ fontSize: '0.78rem', fontWeight: 600, opacity: 0.8 }}>
+                              {instantInfo.available ? 'Gardener dispatched now' : 'No gardener free right now'}
+                            </div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setBookingMode('schedule')}
+                            style={{
+                              padding: 20, borderRadius: 20, textAlign: 'left',
+                              border: `2px solid ${bookingMode === 'schedule' ? 'var(--forest)' : 'var(--border)'}`,
+                              background: bookingMode === 'schedule' ? 'var(--forest)' : '#fff',
+                              color: bookingMode === 'schedule' ? '#fff' : 'var(--forest)',
+                              cursor: 'pointer',
+                              boxShadow: bookingMode === 'schedule' ? '0 8px 24px rgba(3,65,26,0.18)' : 'none',
+                              transition: 'all 0.2s',
+                            }}
+                          >
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 99,
+                              background: bookingMode === 'schedule' ? 'rgba(255,255,255,0.15)' : 'rgba(3,65,26,0.08)',
+                              fontSize: '0.72rem', fontWeight: 800, marginBottom: 10 }}>
+                              <span>📅</span><span>Later</span>
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: 4 }}>Schedule</div>
+                            <div style={{ fontSize: '0.78rem', fontWeight: 600, opacity: 0.8 }}>Pick your date &amp; time</div>
+                          </button>
+                        </div>
+                      )}
+
+                      {checkingInstant && (
+                        <div style={{ padding: '12px 0', color: 'var(--sage)', fontSize: '0.85rem', fontWeight: 600 }}>Checking instant availability…</div>
+                      )}
+
+                      {instantInfo && instantInfo.eta_minutes <= 0 && (
+                        <div style={{ padding: '14px 16px', borderRadius: 14, background: '#fff8e1', border: '1.5px solid #f5c842', color: '#7a5c00', fontWeight: 700, fontSize: '0.82rem' }}>
+                          Instant booking isn&apos;t available in your area yet. Please pick a scheduled slot below.
+                        </div>
+                      )}
+
+                      {bookingMode === 'instant' && instantInfo?.available && (
+                        <div style={{ padding: '18px 20px', borderRadius: 18, background: 'rgba(3,65,26,0.06)', border: '1.5px dashed var(--forest-mid)' }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--sage)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>You&apos;re booking instant</div>
+                          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--forest)', lineHeight: 1.5 }}>
+                            A gardener will be dispatched and arrive within <strong>~{instantInfo.eta_minutes} minutes</strong>.
+                          </div>
+                        </div>
+                      )}
+
+                      {bookingMode === 'schedule' && (
+                      <>
                       <div>
                         <label style={{ display: 'block', fontWeight: 800, marginBottom: 12, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--sage)' }}>1. Select Date</label>
                         <div style={{ position: 'relative' }}>
@@ -492,8 +603,10 @@ function BookFlow() {
                         </div>
                         )}
                       </div>
+                      </>
+                      )}
                     </div>
-                    <button onClick={() => setActiveStep(5)} disabled={!form.scheduled_date} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', borderRadius: 10, marginTop: 32, fontWeight: 500, fontSize: '0.85rem' }}>Review & Confirm Selection</button>
+                    <button onClick={() => setActiveStep(5)} disabled={bookingMode === 'schedule' ? !form.scheduled_date : (bookingMode === 'instant' && !instantInfo?.available)} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', borderRadius: 10, marginTop: 32, fontWeight: 500, fontSize: '0.85rem' }}>Review & Confirm Selection</button>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -519,7 +632,11 @@ function BookFlow() {
                         {!isSubscriptionPlan && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ color: 'var(--sage)', fontWeight: 700, fontSize: '0.9rem' }}>Schedule</span>
-                          <span style={{ fontWeight: 800, color: 'var(--forest)' }}>{form.scheduled_date} @ {form.scheduled_time}</span>
+                          <span style={{ fontWeight: 800, color: 'var(--forest)' }}>
+                            {bookingMode === 'instant'
+                              ? `⚡ Instant — within ~${instantInfo?.eta_minutes ?? 50} min`
+                              : `${form.scheduled_date} @ ${form.scheduled_time}`}
+                          </span>
                         </div>
                         )}
                         {isSubscriptionPlan && (
