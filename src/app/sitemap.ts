@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { fetchAreas } from '@/lib/areas';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://gkm.gobt.in/api';
 
@@ -18,7 +19,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/green-makeover`,lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/contact`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
     { url: `${base}/careers`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${base}/terms`,         lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+    { url: `${base}/complaints`,    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
   ];
+
+  // Service area pages — driven by admin City SEO list, falls back to
+  // hardcoded SERVING_AREAS if the API is unreachable.
+  const areas = await fetchAreas();
+  const areaPages: MetadataRoute.Sitemap = areas.map(a => ({
+    url: `${base}/${a.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
 
   // Dynamic: Shop products
   let shopProductPages: MetadataRoute.Sitemap = [];
@@ -68,5 +81,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // API down — skip blog pages
   }
 
-  return [...staticPages, ...shopProductPages, ...cityPages, ...blogPages];
+  return [...staticPages, ...areaPages, ...shopProductPages, ...cityPages, ...blogPages];
 }
