@@ -4,6 +4,7 @@ import { useCart } from '@/store/cart';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { createOrder, addBookingAddons } from '@/lib/api';
+import { sanitize } from '@/lib/validators';
 import { useAuth } from '@/store/auth';
 import { useLocation } from '@/store/location';
 import dynamic from 'next/dynamic';
@@ -108,9 +109,9 @@ export default function CartDrawer() {
     } else {
       const { v, firstError } = await import('@/lib/validators');
       const err = firstError([
-        v.text(addrF.roomNo,   { field: 'flat/room number', min: 1, max: 100 }),
-        v.text(addrF.building, { field: 'building', min: 1, max: 255 }),
-        v.text(addrF.city,     { field: 'city', min: 2, max: 80 }),
+        v.addressLine(addrF.roomNo,   { field: 'flat/room number', min: 1, max: 20 }),
+        v.addressLine(addrF.building, { field: 'building',         min: 2, max: 60 }),
+        v.city(addrF.city),
         v.pincode(addrF.pincode),
       ]);
       if (err) { toast.error(err); return; }
@@ -399,14 +400,14 @@ export default function CartDrawer() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', marginBottom: 6, color: 'var(--forest)' }}>Room / Flat No. *</label>
-                    <input value={addrF.roomNo} onChange={e => updateAddrF({ roomNo: e.target.value })} placeholder="e.g. B-204"
+                    <input value={addrF.roomNo} maxLength={20} onChange={e => updateAddrF({ roomNo: sanitize.addressLine(e.target.value, 20) })} placeholder="e.g. B-204"
                       style={{ width: '100%', padding: '11px 13px', borderRadius: 11, border: '1.5px solid var(--border)', fontFamily: 'var(--font-body)', fontSize: '0.88rem', background: '#fff', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', fontWeight: 600, transition: 'border-color 0.2s' }}
                       onFocus={e => e.target.style.borderColor = 'var(--forest)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border)'} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', marginBottom: 6, color: 'var(--forest)' }}>Block / Building *</label>
-                    <input value={addrF.building} onChange={e => updateAddrF({ building: e.target.value })} placeholder="e.g. ATS Pristine"
+                    <input value={addrF.building} maxLength={60} onChange={e => updateAddrF({ building: sanitize.addressLine(e.target.value, 60) })} placeholder="e.g. ATS Pristine"
                       style={{ width: '100%', padding: '11px 13px', borderRadius: 11, border: '1.5px solid var(--border)', fontFamily: 'var(--font-body)', fontSize: '0.88rem', background: '#fff', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', fontWeight: 600, transition: 'border-color 0.2s' }}
                       onFocus={e => e.target.style.borderColor = 'var(--forest)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border)'} />
@@ -417,14 +418,14 @@ export default function CartDrawer() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', marginBottom: 6, color: 'var(--forest)' }}>City *</label>
-                    <input value={addrF.city} onChange={e => updateAddrF({ city: e.target.value })} placeholder="e.g. Noida"
+                    <input value={addrF.city} maxLength={40} onChange={e => updateAddrF({ city: sanitize.city(e.target.value) })} placeholder="e.g. Noida"
                       style={{ width: '100%', padding: '11px 13px', borderRadius: 11, border: '1.5px solid var(--border)', fontFamily: 'var(--font-body)', fontSize: '0.88rem', background: '#fff', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', fontWeight: 600, transition: 'border-color 0.2s' }}
                       onFocus={e => e.target.style.borderColor = 'var(--forest)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border)'} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', marginBottom: 6, color: 'var(--forest)' }}>Pincode *</label>
-                    <input value={addrF.pincode} onChange={e => updateAddrF({ pincode: e.target.value.replace(/\D/g,'') })} placeholder="e.g. 201301" inputMode="numeric" maxLength={6}
+                    <input value={addrF.pincode} onChange={e => updateAddrF({ pincode: sanitize.pincode(e.target.value) })} placeholder="e.g. 201301" inputMode="numeric" maxLength={6}
                       style={{ width: '100%', padding: '11px 13px', borderRadius: 11, border: '1.5px solid var(--border)', fontFamily: 'var(--font-body)', fontSize: '0.88rem', background: '#fff', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', fontWeight: 600, transition: 'border-color 0.2s' }}
                       onFocus={e => e.target.style.borderColor = 'var(--forest)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border)'} />

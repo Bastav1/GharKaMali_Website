@@ -71,14 +71,14 @@ export default function DashboardPage() {
                 </h1>
                 <div className="dash-stat-row" style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
                   {[
-                    { label:'Active Plans',   value:subs.filter((s:any)=>s.status==='active').length },
-                    { label:'Shop Orders',    value:orders.length },
-                    { label:'Total Bookings', value:totalBookings },
+                    { label:'Active Plans',   value:subs.filter((s:any)=>s.status==='active').length, href:'/subscriptions' },
+                    { label:'Shop Orders',    value:orders.length,                                    href:'/shop/orders' },
+                    { label:'Total Bookings', value:totalBookings,                                    href:'/bookings' },
                   ].map(stat => (
-                    <div key={stat.label} className="dash-stat-card" style={{ background:'#fff', border:'1px solid var(--border-mid)', borderRadius:16, padding:'16px 24px', boxShadow: 'var(--sh-xs)' }}>
+                    <Link key={stat.label} href={stat.href} className="dash-stat-card" style={{ background:'#fff', border:'1px solid var(--border-mid)', borderRadius:16, padding:'16px 24px', boxShadow: 'var(--sh-xs)', textDecoration:'none', color:'inherit', display:'block', cursor:'pointer' }}>
                       <div style={{ fontFamily:'var(--font-display)', fontWeight:800, fontSize:'1.4rem', color:'var(--forest)', lineHeight:1 }}>{stat.value}</div>
                       <div style={{ fontSize:'0.75rem', color:'var(--sage)', marginTop:6, fontWeight:700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{stat.label}</div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>

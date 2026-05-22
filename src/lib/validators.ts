@@ -57,6 +57,34 @@ export const v = {
     return { ok: true };
   },
 
+  // City / town. Letters, spaces, dots, apostrophes, hyphens. No digits, no symbols.
+  city(value: any, opts: { field?: string; optional?: boolean } = {}): V {
+    const field = opts.field ?? 'city';
+    const s = String(value ?? '').trim();
+    if (!s) return opts.optional ? { ok: true } : { ok: false, field, message: 'City is required' };
+    if (s.length < 2 || s.length > 40) return { ok: false, field, message: 'City must be 2–40 characters' };
+    if (!/^[A-Za-zऀ-ॿ .'\-]+$/.test(s)) return { ok: false, field, message: 'City may only contain letters, spaces, dots and hyphens' };
+    if (!/[A-Za-zऀ-ॿ]/.test(s)) return { ok: false, field, message: 'Enter a valid city name' };
+    if (/(.)\1{3,}/.test(s)) return { ok: false, field, message: 'City has too many repeated characters' };
+    return { ok: true };
+  },
+
+  // Address line (room/building/area/landmark). Alphanumeric + a small set of
+  // safe punctuation. Rejects bracket/semicolon/pipe garbage that shows up when
+  // users paste random text, and blocks 4+ repeated characters in a row.
+  addressLine(value: any, opts: { field: string; min?: number; max?: number; optional?: boolean }): V {
+    const { field } = opts;
+    const min = opts.min ?? 2, max = opts.max ?? 80;
+    const s = String(value ?? '').trim();
+    if (!s) return opts.optional ? { ok: true } : { ok: false, field, message: `${cap(field)} is required` };
+    if (s.length < min) return { ok: false, field, message: `${cap(field)} must be at least ${min} characters` };
+    if (s.length > max) return { ok: false, field, message: `${cap(field)} must be at most ${max} characters` };
+    if (!/^[A-Za-z0-9ऀ-ॿ ,.\-/#'&()]+$/.test(s)) return { ok: false, field, message: `${cap(field)} contains invalid characters` };
+    if (!/[A-Za-z0-9ऀ-ॿ]/.test(s)) return { ok: false, field, message: `Enter a valid ${field}` };
+    if (/(.)\1{3,}/.test(s)) return { ok: false, field, message: `${cap(field)} has too many repeated characters` };
+    return { ok: true };
+  },
+
   gstin(value: any, opts: { field?: string; optional?: boolean } = {}): V {
     const field = opts.field ?? 'billing_gstin';
     const s = String(value ?? '').trim().toUpperCase();
@@ -140,3 +168,21 @@ export function firstError(checks: V[]): string | null {
 // Normalize phone for submission (matches backend sanitizer)
 export const normalizePhone = (raw: any): string =>
   String(raw ?? '').replace(/[\s-]/g, '').replace(/^(\+?91|0)/, '');
+
+// ── Input sanitizers ────────────────────────────────────────────────────────
+// Use in onChange to filter keystrokes before they hit state. Returns the
+// cleaned string so the input never shows characters the validator would reject.
+// Address/city sanitizers also collapse runs of the same character down to 3,
+// so users physically can't hold a key down to fill the field with "hhhhh…".
+const collapseRepeats = (s: string) => s.replace(/(.)\1{3,}/g, '$1$1$1');
+
+export const sanitize = {
+  digits: (raw: any, max = 10) => String(raw ?? '').replace(/\D/g, '').slice(0, max),
+  pincode: (raw: any) => String(raw ?? '').replace(/\D/g, '').slice(0, 6),
+  city: (raw: any) =>
+    collapseRepeats(String(raw ?? '').replace(/[^A-Za-zऀ-ॿ .'\-]/g, '')).slice(0, 40),
+  addressLine: (raw: any, max = 80) =>
+    collapseRepeats(String(raw ?? '').replace(/[^A-Za-z0-9ऀ-ॿ ,.\-/#'&()]/g, '')).slice(0, max),
+  gstin: (raw: any) =>
+    String(raw ?? '').toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 15),
+};

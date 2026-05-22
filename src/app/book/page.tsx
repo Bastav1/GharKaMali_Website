@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import { useAuth } from '@/store/auth';
 import { useCart } from '@/store/cart';
 import { checkServiceability, getPlans, getAddons, createBooking, createSubscription, initiatePayment, getPreviousGardeners, checkGardenerAvailability, checkInstantAvailability, addBookingAddons } from '@/lib/api';
+import { v, firstError, sanitize } from '@/lib/validators';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from '@/store/location';
 const AddressPicker = dynamic(() => import('@/components/AddressPicker'), { ssr: false });
@@ -395,12 +396,12 @@ function BookFlow() {
                       </div>
 
                       <div className="book-addr-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>ROOM / FLAT NO.</label><input placeholder="e.g. B-204" value={addrFields.roomNo} onChange={e => updateAddr({ roomNo: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
-                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>BUILDING / SOCIETY</label><input placeholder="e.g. ATS Pristine" value={addrFields.building} onChange={e => updateAddr({ building: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
+                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>ROOM / FLAT NO.</label><input placeholder="e.g. B-204" value={addrFields.roomNo} maxLength={20} onChange={e => updateAddr({ roomNo: sanitize.addressLine(e.target.value, 20) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
+                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>BUILDING / SOCIETY</label><input placeholder="e.g. ATS Pristine" value={addrFields.building} maxLength={60} onChange={e => updateAddr({ building: sanitize.addressLine(e.target.value, 60) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                       </div>
-                      <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>AREA / LANDMARK</label><input placeholder="Sector 150" value={addrFields.area} onChange={e => updateAddr({ area: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
+                      <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>AREA / LANDMARK</label><input placeholder="Sector 150" value={addrFields.area} maxLength={80} onChange={e => updateAddr({ area: sanitize.addressLine(e.target.value, 80) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                       <div className="book-addr-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>CITY</label><input placeholder="e.g. Noida" value={addrFields.city} onChange={e => updateAddr({ city: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
+                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>CITY</label><input placeholder="e.g. Noida" value={addrFields.city} maxLength={40} onChange={e => updateAddr({ city: sanitize.city(e.target.value) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                         <div>
                           <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>STATE</label>
                           <select value={addrFields.state} onChange={e => updateAddr({ state: e.target.value })}
@@ -411,7 +412,7 @@ function BookFlow() {
                           </select>
                         </div>
                       </div>
-                      <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>PINCODE</label><input placeholder="201301" maxLength={6} value={addrFields.pincode} onChange={e => updateAddr({ pincode: e.target.value })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
+                      <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>PINCODE</label><input placeholder="201301" inputMode="numeric" maxLength={6} value={addrFields.pincode} onChange={e => updateAddr({ pincode: sanitize.pincode(e.target.value) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                       <button
                         onClick={() => {
                           if (form.lat === 0 || form.lng === 0) {
@@ -423,6 +424,14 @@ function BookFlow() {
                             toast.error('Selected location is not serviceable');
                             return;
                           }
+                          const err = firstError([
+                            v.addressLine(addrFields.roomNo,   { field: 'flat/room number', min: 1, max: 20 }),
+                            v.addressLine(addrFields.building, { field: 'building',         min: 2, max: 60 }),
+                            v.addressLine(addrFields.area,     { field: 'area/landmark',    min: 2, max: 80 }),
+                            v.city(addrFields.city),
+                            v.pincode(addrFields.pincode),
+                          ]);
+                          if (err) { toast.error(err); return; }
                           setActiveStep(1);
                         }}
                         className="btn btn-primary"
