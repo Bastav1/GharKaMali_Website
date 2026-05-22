@@ -48,9 +48,10 @@ function PlanCarousel({ items }: { items: any[] }) {
   const { zone } = useLocation();
   const [isMobile, setIsMobile] = useState(false);
 
-  // Desktop carousel state
+  // Bounded desktop state — no looping
   const copies = 7;
-  const [activeIdx, setActiveIdx] = useState(items.length * Math.floor(copies / 2));
+  const mid = items.length * Math.floor(copies / 2);
+  const [activeIdx, setActiveIdx] = useState(mid);
   const [isJumping, setIsJumping] = useState(false);
 
   useEffect(() => {
@@ -60,22 +61,14 @@ function PlanCarousel({ items }: { items: any[] }) {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  useEffect(() => {
-    if (isMobile) return;
-    const minIdx = items.length;
-    const maxIdx = items.length * (copies - 1) - 1;
-    if (activeIdx > maxIdx) {
-      setIsJumping(true);
-      setActiveIdx(items.length * Math.floor(copies / 2));
-      setTimeout(() => setIsJumping(false), 50);
-    } else if (activeIdx < minIdx) {
-      setIsJumping(true);
-      setActiveIdx(items.length * (Math.floor(copies / 2) + 1));
-      setTimeout(() => setIsJumping(false), 50);
-    }
-  }, [activeIdx, items.length, isMobile]);
+  const realIdx = activeIdx - mid; // 0-based real index
+  const canPrev = realIdx > 0;
+  const canNext = realIdx < items.length - 1;
 
-  // ── Mobile: horizontal scroll snap ──
+  const handlePrev = () => { if (canPrev) setActiveIdx(p => p - 1); };
+  const handleNext = () => { if (canNext) setActiveIdx(p => p + 1); };
+
+  // ── Mobile: horizontal scroll snap (ends at last card) ──
   if (isMobile) {
     return (
       <div style={{ margin: '0 -20px', padding: '20px 0 32px' }}>
@@ -109,31 +102,35 @@ function PlanCarousel({ items }: { items: any[] }) {
             );
           })}
         </div>
-        {/* Swipe hint */}
         <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-faint)', fontWeight: 600, letterSpacing: '0.08em', marginTop: 4, textTransform: 'uppercase' }}>← Swipe to explore →</p>
       </div>
     );
   }
 
-  // ── Desktop: 3D carousel ──
+  // ── Desktop: original 3D carousel, bounded (no loop) ──
   const multiItems = Array(copies).fill(items).flat();
-
   const cardWidth = 360;
   const gap = 32;
   const step = cardWidth + gap;
 
-  const handlePrev = () => setActiveIdx(prev => prev - 1);
-  const handleNext = () => setActiveIdx(prev => prev + 1);
-
   return (
     <section style={{ overflow: 'hidden', padding: '100px 0', position: 'relative', background: 'var(--bg)' }}>
-      {/* Background radial glow */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '100vw', height: '800px', background: 'radial-gradient(circle at center, rgba(3,65,26,0.02) 0%, transparent 60%)', pointerEvents: 'none' }} />
 
       {/* Nav Controls */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', zIndex: 100, pointerEvents: 'none' }}>
-        <button onClick={handlePrev} className="p-nav-btn" style={{ pointerEvents: 'auto', transform: 'translateX(-10px) rotate(180deg)' }}><IcArrow /></button>
-        <button onClick={handleNext} className="p-nav-btn" style={{ pointerEvents: 'auto', transform: 'translateX(10px)' }}><IcArrow /></button>
+        <button
+          onClick={handlePrev}
+          className="p-nav-btn p-nav-prev"
+          disabled={!canPrev}
+          style={{ pointerEvents: 'auto', opacity: canPrev ? 1 : 0.25, cursor: canPrev ? 'pointer' : 'default' }}
+        ><IcArrow /></button>
+        <button
+          onClick={handleNext}
+          className="p-nav-btn p-nav-next"
+          disabled={!canNext}
+          style={{ pointerEvents: 'auto', opacity: canNext ? 1 : 0.25, cursor: canNext ? 'pointer' : 'default' }}
+        ><IcArrow /></button>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', position: 'relative', height: 620, alignItems: 'center' }}>
@@ -145,45 +142,45 @@ function PlanCarousel({ items }: { items: any[] }) {
           {multiItems.map((plan, i) => {
             const isCenter = i === activeIdx;
             const isDark = plan.name?.toLowerCase().includes('standard');
-            
+            const cardReal = i - mid;
+            const inBounds = cardReal >= 0 && cardReal <= items.length - 1;
             return (
               <motion.div
                 key={`${plan.id}-${i}`}
                 initial={false}
-                animate={{ 
+                animate={{
                   scale: isCenter ? 1.08 : 0.85,
-                  opacity: isCenter ? 1 : 0.45,
+                  opacity: isCenter ? 1 : (inBounds ? 0.45 : 0),
                   y: isCenter ? 0 : 25,
                   rotateY: isCenter ? 0 : (i < activeIdx ? 12 : -12),
                   z: isCenter ? 80 : 0
                 }}
                 transition={{ type: 'spring', stiffness: 240, damping: 28 }}
-                style={{ width: cardWidth, flexShrink: 0, cursor: 'pointer' }}
-                onClick={() => setActiveIdx(i)}
+                style={{ width: cardWidth, flexShrink: 0, cursor: inBounds && !isCenter ? 'pointer' : 'default', pointerEvents: inBounds ? 'auto' : 'none' }}
+                onClick={() => {
+                  if (!inBounds) return;
+                  setActiveIdx(i);
+                }}
               >
-                <div className={`p-card ${isDark ? 'dark' : ''}`} style={{ 
+                <div className={`p-card ${isDark ? 'dark' : ''}`} style={{
                   background: isDark ? 'var(--forest)' : '#fff',
                   borderRadius: 40,
                   border: isCenter ? '2.5px solid var(--gold)' : '1px solid var(--border)',
                   padding: '52px 40px',
                   height: 620,
-                  display: 'flex',
-                  flexDirection: 'column',
+                  display: 'flex', flexDirection: 'column',
                   boxShadow: isCenter ? '0 60px 120px rgba(3,65,26,0.3), 0 0 45px rgba(201,168,76,0.2)' : 'var(--sh-sm)',
                   transition: 'border 0.4s var(--ease)',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  position: 'relative', overflow: 'hidden'
                 }}>
                   {isCenter && (
-                     <div style={{ position: 'absolute', top: 16, right: 32, background: 'var(--gold)', color: 'var(--forest)', padding: '7px 20px', borderRadius: 99, fontSize: '0.68rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', zIndex: 20 }}>
-                        FEATURED PLAN
-                     </div>
+                    <div style={{ position: 'absolute', top: 16, right: 32, background: 'var(--gold)', color: 'var(--forest)', padding: '7px 20px', borderRadius: 99, fontSize: '0.68rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', zIndex: 20 }}>
+                      FEATURED PLAN
+                    </div>
                   )}
-
                   <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isDark ? 'rgba(255,255,255,0.6)' : 'var(--sage)', textTransform: 'uppercase', letterSpacing: '0.18em', marginBottom: 14 }}>{plan.plan_type}</div>
                   <h3 style={{ fontSize: '2.2rem', fontWeight: 700, color: isDark ? '#fff' : 'var(--forest)', marginBottom: 16, letterSpacing: '-0.03em', lineHeight: 1.05 }}>{plan.name}</h3>
                   <p style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'var(--text-2)', fontSize: '1rem', marginBottom: 40, lineHeight: 1.7, flexShrink: 0 }}>{plan.description || 'Premium botanical luxury for your flourishing space.'}</p>
-
                   <div style={{ marginBottom: 44 }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                       <span style={{ fontSize: '3.4rem', fontWeight: 700, color: isDark ? 'var(--gold)' : 'var(--forest)', fontFamily: 'var(--font-display)', lineHeight: 0.9 }}>
@@ -192,7 +189,6 @@ function PlanCarousel({ items }: { items: any[] }) {
                       <span style={{ fontSize: '1.25rem', color: isDark ? 'rgba(255,255,255,0.4)' : 'var(--sage)', fontWeight: 700 }}>{plan.plan_type === 'subscription' ? '/mo' : '/visit'}</span>
                     </div>
                   </div>
-
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 15, marginBottom: 44 }}>
                     {(Array.isArray(plan.features) ? plan.features : []).slice(0, 5).map((f: string, idx: number) => (
                       <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: '0.92rem', color: isDark ? 'rgba(255,255,255,0.8)' : 'var(--forest)', fontWeight: 700 }}>
@@ -201,7 +197,6 @@ function PlanCarousel({ items }: { items: any[] }) {
                       </div>
                     ))}
                   </div>
-
                   <Link href={`/book?plan=${plan.id}`} className={`btn ${isDark ? 'btn-primary' : 'btn-forest'}`} style={{ width: '100%', justifyContent: 'center', padding: '20px', fontSize: '1rem', fontWeight: 600, borderRadius: 24, marginTop: 'auto' }}>
                     {plan.plan_type === 'subscription' ? 'Subscribe Now' : 'Book Now'}
                   </Link>
@@ -213,8 +208,10 @@ function PlanCarousel({ items }: { items: any[] }) {
       </div>
 
       <style jsx>{`
-        .p-nav-btn { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--border-strong); background: #fff; color: var(--forest); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--sh-lg); transition: all 0.3s; }
-        .p-nav-btn:hover { background: var(--forest); color: #fff; transform: scale(1.1); }
+        .p-nav-btn { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--border-strong); background: #fff; color: var(--forest); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--sh-lg); transition: background 0.25s, color 0.25s, box-shadow 0.25s; }
+        .p-nav-prev { transform: translateX(-10px) rotate(180deg); }
+        .p-nav-next { transform: translateX(10px); }
+        .p-nav-btn:hover:not(:disabled) { background: var(--forest); color: #fff; box-shadow: var(--sh-xl); }
         .p-card { transform-style: preserve-3d; }
       `}</style>
     </section>

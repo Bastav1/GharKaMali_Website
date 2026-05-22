@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida. Book your garden visit today!',
     images: [
       {
-        url: '/logo.png',
+        url: `${SITE_URL}/logo.png`,
         width: 1200,
         height: 630,
         alt: 'GharKaMali — Professional Plant Care',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'GharKaMali — Expert Plant Care at Home | Starting ₹349',
     description: 'Expert plant care at your home starting just ₹349. Professional gardeners in Noida & Greater Noida.',
-    images: ['/logo.png'],
+    images: [`${SITE_URL}/logo.png`],
   },
   icons: {
     icon: '/favicon.ico',

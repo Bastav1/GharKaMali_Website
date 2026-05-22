@@ -38,10 +38,10 @@ const SERVICES = [
 ];
 
 const SPACES = [
-  { Icon: Ic.Home, title: 'Balcony', desc: 'A curated green corner for daily calm and fresh air.', img: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=700&h=500&fit=crop', tag: 'Most Popular' },
-  { Icon: Ic.Sun, title: 'Terrace', desc: 'An outdoor paradise for family evenings and gatherings.', img: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=700&h=500&fit=crop', tag: 'Trending' },
-  { Icon: Ic.Leaf, title: 'Indoor', desc: 'Natural freshness for living rooms, bedrooms and corridors.', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=700&h=500&fit=crop', tag: 'Premium' },
-  { Icon: Ic.Office, title: 'Office', desc: 'Productive workspaces that boost morale and well-being.', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=700&h=500&fit=crop', tag: 'Corporate' },
+  { Icon: Ic.Home, title: 'Balcony', desc: 'A curated green corner for daily calm and fresh air.', img: '/img-1.jpeg', tag: 'Most Popular' },
+  { Icon: Ic.Sun, title: 'Terrace', desc: 'An outdoor paradise for family evenings and gatherings.', img: '/img-3.jpeg', tag: 'Trending' },
+  { Icon: Ic.Leaf, title: 'Indoor', desc: 'Natural freshness for living rooms, bedrooms and corridors.', img: '/img-5.jpeg', tag: 'Premium' },
+  { Icon: Ic.Office, title: 'Office', desc: 'Productive workspaces that boost morale and well-being.', img: '/img-13.jpeg', tag: 'Corporate' },
 ];
 
 const PLANS = [
@@ -96,7 +96,7 @@ export default function GreenMakeoverPage() {
       {/* ═══ 1. HERO ═══ */}
       <section className="gmr-sec gmr-hero">
         <div className="gmr-hero-bg">
-          <img src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1920&h=1080&fit=crop" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }} />
+          <img src="/img-2.jpeg" alt="Green makeover background" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18 }} />
         </div>
         <div className="gmr-blob b1" /><div className="gmr-blob b2" />
 
@@ -148,7 +148,7 @@ export default function GreenMakeoverPage() {
       {/* ═══ 2. CONSULTATION ═══ */}
       <section className="gmr-sec gmr-split-sec" id="consult">
         <div className="gmr-split-img">
-          <img src="https://images.unsplash.com/photo-1598902108854-10e335adac99?w=900&h=1100&fit=crop" alt="Expert consultation" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src="/img-13.jpeg" alt="Expert consultation by GharKaMali" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div className="gmr-split-img-fade" />
           <div className="gmr-float-card">
             <div className="gmr-float-icon"><Ic.Tool /></div>

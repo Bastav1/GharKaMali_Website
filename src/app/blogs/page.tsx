@@ -162,8 +162,8 @@ export default function BlogsPage() {
                       cursor: 'pointer' 
                     }}>
                     <div style={{ width: 220, aspectRatio: '16/10', borderRadius: 18, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)' }}>
-                      <img src={b.thumbnail || 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&h=500&fit=crop'} alt={b.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={e => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&h=500&fit=crop&q=80'; }}
+                      <img src={b.thumbnail || '/img-14.jpeg'} alt={b.title || 'GharKaMali blog'} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => { (e.target as HTMLImageElement).src = '/img-14.jpeg'; }}
                       />
                     </div>
                     <div style={{ flex: 1 }}>

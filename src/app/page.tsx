@@ -164,7 +164,7 @@ const AppDownloadPopup = () => {
     <div className="app-popup-overlay" onClick={() => setShow(false)}>
       <div className="app-popup-box" onClick={e => e.stopPropagation()}>
         <button className="close" onClick={() => setShow(false)}>×</button>
-        <div className="app-popup-icon"><IcLeaf /></div>
+        <img src="/logo.png" alt="GharKaMali" style={{ width: 140, height: 'auto', objectFit: 'contain', display: 'block', margin: '0 auto 8px' }} />
         <h3 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--forest)', marginBottom: 12 }}>Join the Green Club</h3>
         <p style={{ color: 'var(--text-2)', fontSize: '0.88rem', lineHeight: 1.6, marginBottom: 32, fontWeight: 500 }}>
           Download the GharKaMali app to track your plant growth, get digital health reports, and manage bookings instantly.
@@ -788,8 +788,13 @@ export default function HomePage() {
                 <Link href="/book?type=on-demand" className="btn btn-primary btn-md btn-3d-plant" style={{ position: 'relative', overflow: 'visible', padding: '11px 24px' }}>
                   Book Mali Visit @ ₹349 <IcArrow />
                 </Link>
-                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-md hero-wa-btn" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', padding: '11px 22px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  Free Plant Advice
+                <a
+                  href="#subscription-experience"
+                  className="btn btn-outline btn-md"
+                  style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', padding: '11px 22px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  onClick={e => { e.preventDefault(); document.getElementById('subscription-experience')?.scrollIntoView({ behavior: 'smooth' }); }}
+                >
+                  <IcLeaf /> Check Our Services
                 </a>
               </div>
 
@@ -807,43 +812,117 @@ export default function HomePage() {
             <div className="hero-right-col" style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: '10px',
+              gap: '12px',
               width: '100%',
               maxWidth: '340px',
+              perspective: '800px',
             }}>
               {[
-                { num: 4.9, suffix: '★', label: '⭐ Rating' },
-                { num: 1200, suffix: '+', label: '🏡 Homes Served' },
-                { num: 0, suffix: '', label: '🛡 Verified Experts' },
-                { num: 55, suffix: '+', label: 'Societies Covered' },
-              ].map(s => (
-                <div key={s.label} className="hero-stat-card" style={{
-                  background: 'rgba(255,255,255,0.12)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '16px',
-                  padding: '16px 12px',
-                  textAlign: 'center',
-                  backdropFilter: 'blur(8px)',
-                }}>
-                  <div className="stat-num" style={{
-                    fontSize: 'clamp(1.3rem, 2vw, 1.8rem)',
+                {
+                  value: '4.9★',
+                  label: 'Rating',
+                  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="#edcf87" stroke="#edcf87" strokeWidth="0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+                  accent: 'rgba(237,207,135,0.25)',
+                },
+                {
+                  value: <Counter end={1200} suffix="+" />,
+                  label: 'Homes Served',
+                  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+                  accent: 'rgba(255,255,255,0.12)',
+                },
+                {
+                  value: '✓',
+                  label: 'Verified Experts',
+                  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+                  accent: 'rgba(255,255,255,0.12)',
+                },
+                {
+                  value: <Counter end={55} suffix="+" />,
+                  label: 'Societies',
+                  icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+                  accent: 'rgba(255,255,255,0.12)',
+                },
+              ].map((s, i) => (
+                <div
+                  key={i}
+                  className="hero-stat-3d"
+                  style={{
+                    background: 'rgba(255,255,255,0.10)',
+                    border: '1px solid rgba(255,255,255,0.22)',
+                    borderRadius: '20px',
+                    padding: '18px 12px 14px',
+                    textAlign: 'center',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)',
+                    transformStyle: 'preserve-3d',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    cursor: 'default',
+                    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget;
+                    el.style.transform = 'translateY(-6px) rotateX(8deg) rotateY(-4deg) scale(1.04)';
+                    el.style.boxShadow = '0 20px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.2)';
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget;
+                    el.style.transform = '';
+                    el.style.boxShadow = '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.15)';
+                  }}
+                >
+                  {/* Accent glow blob */}
+                  <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', width: 60, height: 60, borderRadius: '50%', background: s.accent, filter: 'blur(14px)', pointerEvents: 'none' }} />
+                  {/* Top highlight edge (3D bevel) */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)', borderRadius: '20px 20px 0 0', pointerEvents: 'none' }} />
+
+                  {/* Icon */}
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8, position: 'relative', zIndex: 1 }}>
+                    {s.icon}
+                  </div>
+
+                  {/* Number */}
+                  <div style={{
+                    fontSize: 'clamp(1.4rem, 2.2vw, 2rem)',
                     fontWeight: 900,
                     color: '#fff',
-                    lineHeight: 1.1,
-                    marginBottom: 4,
+                    lineHeight: 1,
+                    marginBottom: 6,
+                    textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+                    position: 'relative',
+                    zIndex: 1,
                   }}>
-                    {s.label === '⭐ Rating' ? `4.9★` : s.label === '🛡 Verified Experts' ? `✓` : <Counter end={s.num} suffix={s.suffix} />}
+                    {s.value}
                   </div>
+
+                  {/* Label */}
                   <div style={{
-                    fontSize: '0.62rem',
-                    color: 'rgba(255,255,255,0.6)',
+                    fontSize: '0.58rem',
+                    color: 'rgba(255,255,255,0.65)',
                     fontWeight: 700,
                     textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
+                    letterSpacing: '0.12em',
+                    position: 'relative',
+                    zIndex: 1,
                   }}>{s.label}</div>
                 </div>
               ))}
             </div>
+
+            <style jsx>{`
+              .hero-stat-3d {
+                animation: stat3dIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+              }
+              .hero-stat-3d:nth-child(1) { animation-delay: 0.1s; }
+              .hero-stat-3d:nth-child(2) { animation-delay: 0.2s; }
+              .hero-stat-3d:nth-child(3) { animation-delay: 0.3s; }
+              .hero-stat-3d:nth-child(4) { animation-delay: 0.4s; }
+              @keyframes stat3dIn {
+                from { opacity: 0; transform: translateY(20px) rotateX(20deg); }
+                to   { opacity: 1; transform: translateY(0) rotateX(0); }
+              }
+            `}</style>
 
           </div>
         </div>
@@ -914,7 +993,7 @@ export default function HomePage() {
 
             <div className="prof-gardening-visual s-reveal s-reveal-d2" style={{ position: 'relative' }}>
               <div style={{ position: 'relative', borderRadius: 32, overflow: 'hidden', boxShadow: 'var(--sh-xl)', border: '8px solid #fff', transform: 'rotate(1.5deg)' }}>
-                <img src="/logo.png" alt="GharKaMali gardener caring for balcony plants" style={{ width: '100%', height: 'auto', maxHeight: '440px', objectFit: 'cover', display: 'block' }} />
+                <img src="/img-1.jpeg" alt="GharKaMali expert caring for balcony plants" style={{ width: '100%', height: '440px', objectFit: 'cover', display: 'block' }} />
                 <div style={{ position: 'absolute', top: 20, left: 20, background: 'rgba(3,65,26,0.85)', color: '#fff', padding: '8px 20px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 800, backdropFilter: 'blur(12px)', boxShadow: 'var(--sh-sm)' }}>TRANSFORMATION COMPLETE</div>
               </div>
 
@@ -1308,7 +1387,7 @@ export default function HomePage() {
 
       {/* ═══ PLANS PREVIEW ═══ */}
       {plans.length > 0 && (
-        <section className="section s-reveal" style={{ zIndex: 11 }}>
+        <section id="subscription-experience" className="section s-reveal" style={{ zIndex: 11 }}>
           <div className="container">
             <div style={{ textAlign: 'center', marginBottom: 32 }}>
               <div className="section-divider-line" />
