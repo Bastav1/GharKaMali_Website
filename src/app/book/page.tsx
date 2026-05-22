@@ -21,6 +21,10 @@ const IcChevronLeft = () => <svg width="24" height="24" viewBox="0 0 24 24" fill
 const IcChevronRight = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>;
 const IcCheck = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="20 6 9 17 4 12" /></svg>;
 const IcX = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>;
+const IcPin = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+const IcMapAlt = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>;
+const IcBolt = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+const IcCalendarDot = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
 
 function StepHeader({ num, title, active, done, onClick, locked }: { num: number; title: string; active: boolean; done: boolean; onClick: () => void; locked: boolean }) {
   return (
@@ -306,6 +310,35 @@ function BookFlow() {
     ],
   };
 
+  // Auth gate — show a friendly prompt instead of technical errors
+  if (!isLoading && !isAuthenticated) {
+    return (
+      <>
+        <Navbar />
+        <div style={{ minHeight: '100vh', background: 'linear-gradient(165deg, #eef6ee 0%, #fffdf5 55%, #f5f0e8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ maxWidth: 440, width: '100%', background: '#fff', borderRadius: 28, padding: '48px 36px', boxShadow: 'var(--sh-lg)', border: '1.5px solid var(--border-gold)', textAlign: 'center' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(3,65,26,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: 'var(--forest)' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--forest)', marginBottom: 10 }}>Please Log In to Book</h2>
+            <p style={{ color: 'var(--text-2)', fontSize: '0.92rem', lineHeight: 1.7, marginBottom: 28, fontWeight: 500 }}>
+              You need an account to book a visit. It only takes a minute to sign up — then you can track visits, manage bookings, and more.
+            </p>
+            <a
+              href={`/login?next=/book${typeof window !== 'undefined' ? encodeURIComponent(window.location.search) : ''}`}
+              style={{ display: 'block', width: '100%', padding: '15px', background: 'var(--forest)', color: '#fff', borderRadius: 14, fontWeight: 800, fontSize: '1rem', textDecoration: 'none', textAlign: 'center', boxShadow: '0 8px 24px rgba(3,65,26,0.2)', marginBottom: 12, transition: 'all 0.2s' }}
+            >
+              Log In to Continue
+            </a>
+            <a href="/login?mode=signup" style={{ display: 'block', width: '100%', padding: '14px', background: 'transparent', color: 'var(--forest)', borderRadius: 14, fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', textAlign: 'center', border: '1.5px solid var(--border-mid)' }}>
+              Create Free Account
+            </a>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookFaqSchema) }} />
@@ -353,7 +386,7 @@ function BookFlow() {
                             cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
                           }}
                         >
-                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--forest)', marginBottom: 4 }}>📍 Current Location</div>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--forest)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}><IcPin /> Current Location</div>
                           <div style={{ fontSize: '0.72rem', color: 'var(--sage)', fontWeight: 600 }}>Service at where I am now</div>
                         </button>
                         <button
@@ -366,7 +399,7 @@ function BookFlow() {
                             cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
                           }}
                         >
-                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--forest)', marginBottom: 4 }}>🗺 Different Location</div>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--forest)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}><IcMapAlt /> Different Location</div>
                           <div style={{ fontSize: '0.72rem', color: 'var(--sage)', fontWeight: 600 }}>Pick on map (e.g. parent's home)</div>
                         </button>
                       </div>
@@ -544,7 +577,7 @@ function BookFlow() {
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 99,
                               background: bookingMode === 'instant' ? 'rgba(255,255,255,0.15)' : 'rgba(3,65,26,0.08)',
                               fontSize: '0.72rem', fontWeight: 800, marginBottom: 10 }}>
-                              <span>⚡</span><span>{instantInfo.eta_minutes} min</span>
+                              <IcBolt /><span>{instantInfo.eta_minutes} min</span>
                             </div>
                             <div style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: 4 }}>Instant</div>
                             <div style={{ fontSize: '0.78rem', fontWeight: 600, opacity: 0.8 }}>
@@ -567,7 +600,7 @@ function BookFlow() {
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 99,
                               background: bookingMode === 'schedule' ? 'rgba(255,255,255,0.15)' : 'rgba(3,65,26,0.08)',
                               fontSize: '0.72rem', fontWeight: 800, marginBottom: 10 }}>
-                              <span>📅</span><span>Later</span>
+                              <IcCalendarDot /><span>Later</span>
                             </div>
                             <div style={{ fontSize: '1.05rem', fontWeight: 900, marginBottom: 4 }}>Schedule</div>
                             <div style={{ fontSize: '0.78rem', fontWeight: 600, opacity: 0.8 }}>Pick your date &amp; time</div>
@@ -672,7 +705,7 @@ function BookFlow() {
                           <span style={{ color: 'var(--sage)', fontWeight: 700, fontSize: '0.9rem' }}>Schedule</span>
                           <span style={{ fontWeight: 800, color: 'var(--forest)' }}>
                             {bookingMode === 'instant'
-                              ? `⚡ Instant — within ~${instantInfo?.eta_minutes ?? 50} min`
+                              ? `Instant — within ~${instantInfo?.eta_minutes ?? 50} min`
                               : `${form.scheduled_date} @ ${form.scheduled_time}`}
                           </span>
                         </div>
