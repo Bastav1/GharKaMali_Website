@@ -46,7 +46,16 @@ export default function SocialProofToast() {
     let isMounted = true;
     async function init() {
       try {
-        const res = await getSocialProof();
+        // Count this visitor only once per browser session — reloads/navigations
+        // within the same session won't inflate the live visitor number.
+        let countVisit = false;
+        try {
+          if (!sessionStorage.getItem('spVisitCounted')) {
+            sessionStorage.setItem('spVisitCounted', '1');
+            countVisit = true;
+          }
+        } catch {}
+        const res = await getSocialProof(countVisit);
         if (!isMounted) return;
         if (res?.enabled !== false && res?.items?.length > 0) {
           setItems(res.items);
