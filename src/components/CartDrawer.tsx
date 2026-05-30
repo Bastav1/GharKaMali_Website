@@ -5,6 +5,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { createOrder, addBookingAddons } from '@/lib/api';
 import { sanitize } from '@/lib/validators';
+import StateSelect from '@/components/StateSelect';
 import { useAuth } from '@/store/auth';
 import { useLocation } from '@/store/location';
 import dynamic from 'next/dynamic';
@@ -435,14 +436,7 @@ export default function CartDrawer() {
                 {/* Row 3: State (full width) */}
                 <div>
                   <label style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', marginBottom: 6, color: 'var(--forest)' }}>State *</label>
-                  <select value={addrF.state} onChange={e => updateAddrF({ state: e.target.value })}
-                    style={{ width: '100%', padding: '11px 13px', borderRadius: 11, border: '1.5px solid var(--border)', fontFamily: 'var(--font-body)', fontSize: '0.88rem', background: '#fff', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', fontWeight: 600, appearance: 'none', cursor: 'pointer', transition: 'border-color 0.2s' }}
-                    onFocus={e => e.currentTarget.style.borderColor = 'var(--forest)'}
-                    onBlur={e => e.currentTarget.style.borderColor = 'var(--border)'}>
-                    {['Uttar Pradesh','Delhi','Haryana','Rajasthan','Maharashtra','Karnataka','Tamil Nadu','West Bengal','Gujarat','Telangana','Other'].map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
+                  <StateSelect value={addrF.state} onChange={s => updateAddrF({ state: s })} />
                 </div>
 
                 {/* Address preview */}

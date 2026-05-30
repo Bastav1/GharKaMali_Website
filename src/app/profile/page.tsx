@@ -5,6 +5,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import StateSelect from '@/components/StateSelect';
 import { useAuth } from '@/store/auth';
 import { getProfile, updateProfile, getMyAddresses, addAddress, deleteAddress, setDefaultAddress } from '@/lib/api';
 
@@ -279,11 +280,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="form-group" style={{ marginBottom: 12 }}>
                       <label className="form-label">State *</label>
-                      <select className="form-input" value={addrF.state} onChange={e => setAddrF({ ...addrF, state: e.target.value })} style={{ cursor: 'pointer' }}>
-                        {['Uttar Pradesh','Delhi','Haryana','Rajasthan','Maharashtra','Karnataka','Tamil Nadu','West Bengal','Gujarat','Telangana','Other'].map(s => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
+                      <StateSelect value={addrF.state} onChange={s => setAddrF({ ...addrF, state: s })} />
                     </div>
                     <div style={{ display: 'flex', gap: 12 }}>
                       <button onClick={() => setShowAddForm(false)} className="btn btn-outline" style={{ flex: 1 }}>Cancel</button>

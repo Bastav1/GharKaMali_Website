@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import toast from 'react-hot-toast';
 import { useQuery } from '@tanstack/react-query';
 import Navbar from '@/components/Navbar';
+import StateSelect from '@/components/StateSelect';
 import { useAuth } from '@/store/auth';
 import { useCart } from '@/store/cart';
 import { checkServiceability, getPlans, getAddons, createBooking, createSubscription, initiatePayment, getPreviousGardeners, checkGardenerAvailability, checkInstantAvailability, addBookingAddons } from '@/lib/api';
@@ -437,12 +438,8 @@ function BookFlow() {
                         <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>CITY</label><input placeholder="e.g. Noida" value={addrFields.city} maxLength={40} onChange={e => updateAddr({ city: sanitize.city(e.target.value) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                         <div>
                           <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>STATE</label>
-                          <select value={addrFields.state} onChange={e => updateAddr({ state: e.target.value })}
-                            style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600, background: '#fff', appearance: 'none', cursor: 'pointer' }}>
-                            {['Uttar Pradesh','Delhi','Haryana','Rajasthan','Maharashtra','Karnataka','Tamil Nadu','West Bengal','Gujarat','Telangana','Other'].map(s => (
-                              <option key={s} value={s}>{s}</option>
-                            ))}
-                          </select>
+                          <StateSelect value={addrFields.state} onChange={s => updateAddr({ state: s })}
+                            inputStyle={{ padding: 14, borderRadius: 14 }} />
                         </div>
                       </div>
                       <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>PINCODE</label><input placeholder="201301" inputMode="numeric" maxLength={6} value={addrFields.pincode} onChange={e => updateAddr({ pincode: sanitize.pincode(e.target.value) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
