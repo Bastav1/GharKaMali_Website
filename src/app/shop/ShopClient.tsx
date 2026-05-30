@@ -141,7 +141,7 @@ export function ShopClient({ categorySlug }: { categorySlug?: string }) {
   // Resolve the /shop/c/<slug> route segment to a category once categories load.
   useEffect(() => {
     if (!categorySlug) { setCat('All'); return; }
-    const match = categories.find((c: any) => typeof c !== 'string' && slugify(c.name) === categorySlug);
+    const match = categories.find((c: any) => typeof c !== 'string' && (c.slug || slugify(c.name)) === categorySlug);
     if (match) setCat(match.name);
   }, [categorySlug, categories]);
 
@@ -288,10 +288,11 @@ export function ShopClient({ categorySlug }: { categorySlug?: string }) {
             <div className="cat-pills-container" style={{ display: 'flex', gap: 8, overflowX: 'auto', width: '100%', paddingBottom: 4, scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
               {categories.map(c => {
                 const name = typeof c === 'string' ? c : c.name;
+                const slug = typeof c === 'string' ? '' : (c.slug || slugify(c.name));
                 const Icon = CATEGORY_ICONS[name.toLowerCase()] || CATEGORY_ICONS['all'];
                 const isActive = cat === name;
                 return (
-                  <button key={name} onClick={() => router.push(name === 'All' ? '/shop' : `/shop/c/${slugify(name)}`)}
+                  <button key={name} onClick={() => router.push(name === 'All' ? '/shop' : `/shop/c/${slug}`)}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 99, border: `1.5px solid ${isActive ? 'var(--forest)' : 'var(--border)'}`, background: isActive ? 'var(--forest)' : '#fff', color: isActive ? '#fff' : 'var(--forest)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', flexShrink: 0, boxShadow: isActive ? '0 8px 20px rgba(3,65,26,0.15)' : 'none' }}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>{Icon && <Icon />}</span>
                     {name}

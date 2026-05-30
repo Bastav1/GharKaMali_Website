@@ -108,7 +108,7 @@ function BookFlow() {
   // once the plans list loads, and preselect it.
   useEffect(() => {
     if (!planSlugParam || plans.length === 0) return;
-    const match = plans.find(p => slugify(p.name) === planSlugParam);
+    const match = plans.find(p => (p.slug || slugify(p.name)) === planSlugParam);
     if (match && form.plan_id !== match.id) {
       setForm(f => ({ ...f, plan_id: match.id }));
     }
