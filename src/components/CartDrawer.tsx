@@ -173,7 +173,7 @@ export default function CartDrawer() {
     } else {
       const { v, firstError } = await import('@/lib/validators');
       const err = firstError([
-        v.addressLine(addrF.roomNo,   { field: 'flat/room number', min: 1, max: 20 }),
+        v.addressLine(addrF.roomNo,   { field: 'flat/room number', min: 1, max: 10 }),
         v.addressLine(addrF.building, { field: 'building',         min: 2, max: 60 }),
         v.city(addrF.city),
         v.pincode(addrF.pincode),
@@ -538,7 +538,7 @@ export default function CartDrawer() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={{ display: 'block', fontWeight: 700, fontSize: '0.78rem', marginBottom: 6, color: 'var(--forest)' }}>Room / Flat No. *</label>
-                    <input value={addrF.roomNo} maxLength={20} onChange={e => updateAddrF({ roomNo: sanitize.addressLine(e.target.value, 20) })} placeholder="e.g. B-204"
+                    <input value={addrF.roomNo} maxLength={10} onChange={e => updateAddrF({ roomNo: sanitize.addressLine(e.target.value, 10) })} placeholder="e.g. B-204"
                       style={{ width: '100%', padding: '11px 13px', borderRadius: 11, border: '1.5px solid var(--border)', fontFamily: 'var(--font-body)', fontSize: '0.88rem', background: '#fff', outline: 'none', color: 'var(--forest)', boxSizing: 'border-box', fontWeight: 600, transition: 'border-color 0.2s' }}
                       onFocus={e => e.target.style.borderColor = 'var(--forest)'}
                       onBlur={e => e.target.style.borderColor = 'var(--border)'} />

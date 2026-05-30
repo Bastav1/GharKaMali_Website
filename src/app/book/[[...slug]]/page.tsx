@@ -439,7 +439,7 @@ function BookFlow() {
                       </div>
 
                       <div className="book-addr-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>ROOM / FLAT NO.</label><input placeholder="e.g. B-204" value={addrFields.roomNo} maxLength={20} onChange={e => updateAddr({ roomNo: sanitize.addressLine(e.target.value, 20) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
+                        <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>ROOM / FLAT NO.</label><input placeholder="e.g. B-204" value={addrFields.roomNo} maxLength={10} onChange={e => updateAddr({ roomNo: sanitize.addressLine(e.target.value, 10) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                         <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>BUILDING / SOCIETY</label><input placeholder="e.g. ATS Pristine" value={addrFields.building} maxLength={60} onChange={e => updateAddr({ building: sanitize.addressLine(e.target.value, 60) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
                       </div>
                       <div><label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', marginBottom: 6, display: 'block' }}>AREA / LANDMARK</label><input placeholder="Sector 150" value={addrFields.area} maxLength={80} onChange={e => updateAddr({ area: sanitize.addressLine(e.target.value, 80) })} style={{ width: '100%', padding: 14, borderRadius: 14, border: '1.5px solid var(--border)', fontWeight: 600 }} /></div>
@@ -464,7 +464,7 @@ function BookFlow() {
                             return;
                           }
                           const err = firstError([
-                            v.addressLine(addrFields.roomNo,   { field: 'flat/room number', min: 1, max: 20 }),
+                            v.addressLine(addrFields.roomNo,   { field: 'flat/room number', min: 1, max: 10 }),
                             v.addressLine(addrFields.building, { field: 'building',         min: 2, max: 60 }),
                             v.addressLine(addrFields.area,     { field: 'area/landmark',    min: 2, max: 80 }),
                             v.city(addrFields.city),

@@ -261,7 +261,7 @@ export default function ProfilePage() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label className="form-label">Room / Flat No. *</label>
-                        <input className="form-input" value={addrF.roomNo} onChange={e => setAddrF({ ...addrF, roomNo: e.target.value })} placeholder="e.g. B-204" />
+                        <input className="form-input" value={addrF.roomNo} maxLength={10} onChange={e => setAddrF({ ...addrF, roomNo: e.target.value.slice(0, 10) })} placeholder="e.g. B-204" />
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label className="form-label">Building / Society *</label>
