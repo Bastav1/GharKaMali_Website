@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { checkServiceability } from '@/lib/api';
 import { useLocation } from '@/store/location';
 import MapPicker from './Map';
-import { reverseGeocode, searchGeocode } from '@/lib/googleMaps';
+import { reverseGeocode, searchPlaces, placeDetails } from '@/lib/googleMaps';
 
 type Picked = {
   lat: number;
@@ -41,7 +41,7 @@ export default function AddressPicker({ open, onClose, onConfirm, initialLat, in
   const [state, setState] = useState<string | undefined>();
 
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<{ lat: number; lng: number; display: string }[]>([]);
+  const [suggestions, setSuggestions] = useState<{ description: string; placeId: string }[]>([]);
   const [searching, setSearching] = useState(false);
 
   const [serviceableState, setServiceableState] = useState<'unknown' | 'yes' | 'no' | 'checking'>('unknown');
@@ -91,7 +91,7 @@ export default function AddressPicker({ open, onClose, onConfirm, initialLat, in
     }
     const t = setTimeout(async () => {
       setSearching(true);
-      const res = await searchGeocode(query);
+      const res = await searchPlaces(query);
       setSuggestions(res);
       setSearching(false);
     }, 400);
@@ -119,11 +119,23 @@ export default function AddressPicker({ open, onClose, onConfirm, initialLat, in
     );
   };
 
+  // Saved address (already has coords)
   const pickSuggestion = (s: { lat: number; lng: number; display: string }) => {
     setQuery('');
     setSuggestions([]);
     updateFromCoords(s.lat, s.lng);
     if (mapRef.current?.setView) mapRef.current.setView([s.lat, s.lng], 16);
+  };
+
+  // Places Autocomplete prediction → resolve placeId to coords, then move the map
+  const pickPrediction = async (s: { description: string; placeId: string }) => {
+    setQuery('');
+    setSuggestions([]);
+    const loc = await placeDetails(s.placeId);
+    if (loc) {
+      updateFromCoords(loc.lat, loc.lng);
+      if (mapRef.current?.setView) mapRef.current.setView([loc.lat, loc.lng], 16);
+    }
   };
 
   const handleConfirm = () => {
@@ -188,10 +200,10 @@ export default function AddressPicker({ open, onClose, onConfirm, initialLat, in
               {suggestions.map((s, i) => (
                 <button
                   key={i}
-                  onClick={() => pickSuggestion(s)}
+                  onClick={() => pickPrediction(s)}
                   style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--forest)', borderBottom: '1px solid var(--border)' }}
                 >
-                  {s.display}
+                  {s.description}
                 </button>
               ))}
             </div>
@@ -201,7 +213,7 @@ export default function AddressPicker({ open, onClose, onConfirm, initialLat, in
         {/* Saved Addresses Section */}
         <SavedAddressesSection onPick={pickSuggestion} />
 
-        <div className="addr-picker-map" style={{ flex: 1, minHeight: 320, position: 'relative', display: 'flex', width: '100%' }}>
+        <div className="addr-picker-map" style={{ flex: 1, minHeight: 0, position: 'relative', display: 'flex', width: '100%' }}>
           <MapPicker
             center={[startLat, startLng]}
             zoom={15}
@@ -212,7 +224,7 @@ export default function AddressPicker({ open, onClose, onConfirm, initialLat, in
         </div>
 
         {/* Address preview + confirm */}
-        <div style={{ padding: '16px 22px', borderTop: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
+        <div style={{ padding: '16px 22px', borderTop: '1px solid var(--border)', background: 'var(--bg-elevated)', flexShrink: 0 }}>
           <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--sage)', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.08em' }}>Selected Address</div>
           <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--forest)', lineHeight: 1.5, marginBottom: 10, minHeight: 40 }}>
             {loadingAddr ? 'Loading address…' : (address || 'Drag the pin to choose a location')}
@@ -280,20 +292,20 @@ function SavedAddressesSection({ onPick }: { onPick: (s: any) => void }) {
   if (loading || addresses.length === 0) return null;
 
   return (
-    <div style={{ padding: '12px 22px', background: '#f9fafb', borderBottom: '1px solid var(--border)', display: 'flex', gap: 12, overflowX: 'auto', whiteSpace: 'nowrap' }}>
-      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--sage)', alignSelf: 'center' }}>SAVED:</div>
+    <div style={{ padding: '12px 22px', background: '#f9fafb', borderBottom: '1px solid var(--border)', display: 'flex', gap: 12, overflowX: 'auto', whiteSpace: 'nowrap', flexShrink: 0, alignItems: 'center' }}>
+      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--sage)', flexShrink: 0 }}>SAVED:</div>
       {addresses.map((a: any) => (
         <button
           key={a.id}
-          onClick={() => onPick({ 
-            lat: parseFloat(a.latitude), 
-            lng: parseFloat(a.longitude), 
-            display: [a.flat_no, a.building, a.area, a.city].filter(Boolean).join(', ') 
+          onClick={() => onPick({
+            lat: parseFloat(a.latitude),
+            lng: parseFloat(a.longitude),
+            display: [a.flat_no, a.building, a.area, a.city].filter(Boolean).join(', ')
           })}
-          style={{ 
-            padding: '6px 12px', borderRadius: 20, border: '1px solid var(--border)', 
-            background: '#fff', fontSize: '0.75rem', fontWeight: 600, color: 'var(--forest)', 
-            cursor: 'pointer', transition: 'all 0.2s' 
+          style={{
+            padding: '7px 14px', borderRadius: 20, border: '1px solid var(--border)',
+            background: '#fff', fontSize: '0.75rem', fontWeight: 600, color: 'var(--forest)',
+            cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0, lineHeight: 1.2
           }}
           onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--forest)')}
           onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
