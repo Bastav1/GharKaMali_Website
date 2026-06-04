@@ -9,7 +9,8 @@ import Navbar from '@/components/Navbar';
 import StateSelect from '@/components/StateSelect';
 import { useAuth } from '@/store/auth';
 import { useCart } from '@/store/cart';
-import { checkServiceability, getPlans, getAddons, createBooking, createSubscription, initiatePayment, getPreviousGardeners, checkGardenerAvailability, checkInstantAvailability, addBookingAddons } from '@/lib/api';
+import { checkServiceability, getPlans, getAddons, createBooking, createSubscription, getPreviousGardeners, checkGardenerAvailability, checkInstantAvailability, addBookingAddons } from '@/lib/api';
+import { payWithRazorpay } from '@/lib/razorpay';
 import { v, firstError, sanitize } from '@/lib/validators';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from '@/store/location';
@@ -195,9 +196,12 @@ function BookFlow() {
       if (isSubscriptionPlan) {
         res = await createSubscription({
           ...payload,
-          auto_renew: form.auto_renew
+          auto_renew: form.auto_renew,
+          payment_method: 'razorpay',
         });
-        toast.success('Subscription created successfully!');
+        const pay = await payWithRazorpay({ type: 'subscription', subscription_id: res.id });
+        if (pay.ok) toast.success('Subscription activated!');
+        else toast(pay.cancelled ? 'Payment pending — complete it from My Plans.' : (pay.message || 'Payment failed'), { icon: '⏳' });
         router.push('/subscriptions');
       } else {
         const isInstant = bookingMode === 'instant';
@@ -227,7 +231,9 @@ function BookFlow() {
             toast.error(`Booking created but add-ons failed: ${e?.message || 'unknown error'}`);
           }
         }
-        toast.success('Booking Successful! (Test Mode)');
+        const pay = await payWithRazorpay({ type: 'booking', booking_id: res.id });
+        if (pay.ok) toast.success('Booking confirmed & paid!');
+        else toast(pay.cancelled ? 'Booking created — pay from My Bookings to confirm.' : (pay.message || 'Payment failed'), { icon: '⏳' });
         router.push(`/bookings/${res.id}`);
       }
     } catch (err: any) { 

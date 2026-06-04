@@ -7,7 +7,8 @@ import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
-import { getMySubscriptions, cancelSubscription, pauseSubscription, resumeSubscription, selectSubscriptionDates, initiatePayment } from '@/lib/api';
+import { getMySubscriptions, cancelSubscription, pauseSubscription, resumeSubscription, selectSubscriptionDates } from '@/lib/api';
+import { payWithRazorpay } from '@/lib/razorpay';
 
 const IcPause = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
 const IcPlay  = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
@@ -47,7 +48,6 @@ export default function SubscriptionsPage() {
   const [schedulingSub, setSchedulingSub] = useState<any>(null);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  const [payuData, setPayuData] = useState<any>(null);
   const [viewingDetails, setViewingDetails] = useState<any>(null);
 
   useEffect(() => {
@@ -104,32 +104,17 @@ export default function SubscriptionsPage() {
   const handlePayment = async (sub: any) => {
     setActing(true);
     try {
-      const res = await initiatePayment({
-        type: 'subscription',
-        subscription_id: sub.id,
-        amount: sub.plan.price
-      });
-      if (res.mock_success) {
-        setActing(false);
-        toast.success('Payment Successful! Your plan is now active.');
-        setTimeout(() => router.push(res.frontend_redirect), 1500);
-        return;
-      } else if (res.data?.params) {
-        setPayuData(res.data);
+      const pay = await payWithRazorpay({ type: 'subscription', subscription_id: sub.id });
+      if (pay.ok) {
+        toast.success('Payment successful! Your plan is now active.');
+        qc.invalidateQueries({ queryKey: ['subscriptions'] });
+      } else if (!pay.cancelled) {
+        toast.error(pay.message || 'Payment failed');
       }
-    } catch (e: any) {
-      toast.error(e.message || 'Payment initiation failed');
     } finally {
       setActing(false);
     }
   };
-
-  useEffect(() => {
-    if (payuData && payuData.params) {
-      const form = document.getElementById('payu-form') as HTMLFormElement;
-      if (form) form.submit();
-    }
-  }, [payuData]);
 
   if (isLoading) return null;
 
@@ -576,15 +561,6 @@ export default function SubscriptionsPage() {
       </div>
 
       <Footer />
-      
-      {/* Hidden PayU Form */}
-      {payuData && (
-        <form id="payu-form" action={payuData.payu_url} method="POST" style={{ display: 'none' }}>
-          {Object.entries(payuData.params).map(([key, val]: [string, any]) => (
-            <input key={key} type="hidden" name={key} value={val} />
-          ))}
-        </form>
-      )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </>

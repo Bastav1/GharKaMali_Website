@@ -7,7 +7,8 @@ import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
-import { getBooking, cancelBooking, rateBooking, rescheduleBooking, initiatePayment, getTimeAddons, requestTimeAddon } from '@/lib/api';
+import { getBooking, cancelBooking, rateBooking, rescheduleBooking, getTimeAddons, requestTimeAddon } from '@/lib/api';
+import { payWithRazorpay } from '@/lib/razorpay';
 
 /* ─── Icons ──────────────────────────────────────────────────────────────────── */
 const IcPlan     = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
@@ -76,7 +77,6 @@ export default function BookingDetailPage() {
   const [cancelReason, setCancelReason] = useState('');
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('09:00');
-  const [payuData, setPayuData] = useState<any>(null);
   const [paying, setPaying] = useState(false);
 
   useEffect(() => { if (!isLoading && !isAuthenticated) router.replace('/login'); }, [isAuthenticated, isLoading]);
@@ -137,34 +137,17 @@ export default function BookingDetailPage() {
   const handlePayment = async () => {
     setPaying(true);
     try {
-      const res = await initiatePayment({
-        type: booking.booking_type === 'subscription' ? 'subscription' : 'booking',
-        booking_id: booking.id,
-        subscription_id: booking.subscription_id,
-        amount: booking.total_amount,
-        geofence_id: booking.geofence_id
-      });
-      if (res.mock_success) {
-        setPaying(false);
-        toast.success('✅ Payment Successful! Refreshing...');
-        setTimeout(() => router.push(res.frontend_redirect), 1500);
-        return;
-      } else if (res.data?.params) {
-        setPayuData(res.data);
+      const pay = await payWithRazorpay({ type: 'booking', booking_id: booking.id });
+      if (pay.ok) {
+        toast.success('✅ Payment successful!');
+        refetch();
+      } else if (!pay.cancelled) {
+        toast.error(pay.message || 'Payment failed');
       }
-    } catch (e: any) {
-      toast.error(e.message || 'Payment initiation failed');
     } finally {
       setPaying(false);
     }
   };
-
-  useEffect(() => {
-    if (payuData && payuData.params) {
-      const form = document.getElementById('payu-form') as HTMLFormElement;
-      if (form) form.submit();
-    }
-  }, [payuData]);
 
   const minDate = () => { const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().split('T')[0]; };
 
@@ -552,15 +535,6 @@ export default function BookingDetailPage() {
       )}
 
       <Footer />
-      
-      {/* Hidden PayU Form */}
-      {payuData && (
-        <form id="payu-form" action={payuData.payu_url} method="POST" style={{ display: 'none' }}>
-          {Object.entries(payuData.params).map(([key, val]: [string, any]) => (
-            <input key={key} type="hidden" name={key} value={val} />
-          ))}
-        </form>
-      )}
 
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @media(max-width:900px){div[style*="grid-template-columns: 1fr 340px"]{grid-template-columns:1fr !important;}}`}</style>
     </>

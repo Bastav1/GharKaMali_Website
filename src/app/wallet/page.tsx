@@ -1,13 +1,14 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import Navbar from '@/components/Navbar';
 import { useScrollReveal } from '@/hooks/useScrollReveal';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
-import { getProfile, getPayments, walletTopup, initiatePayment } from '@/lib/api';
+import { getProfile, getPayments } from '@/lib/api';
+import { payWithRazorpay } from '@/lib/razorpay';
 
 const AMOUNTS = [100, 250, 500, 1000, 2000, 5000];
 /* Icons */
@@ -33,7 +34,6 @@ export default function WalletPage() {
   const { isAuthenticated, isLoading, updateUser } = useAuth();
   const [amount, setAmount] = useState(500);
   const [custom, setCustom] = useState('');
-  const [payuData, setPayuData] = useState<any>(null);
   
   useEffect(() => {
     if (!isLoading && !isAuthenticated) router.replace('/login?redirect=/wallet');
@@ -57,33 +57,20 @@ export default function WalletPage() {
   const balance = Number((profile as any)?.wallet_balance ?? 0);
   const finalAmount = custom ? parseInt(custom) || 0 : amount;
   
+  const qc = useQueryClient();
   const topupMut = useMutation({
-    mutationFn: () => walletTopup(custom ? parseInt(custom) : amount, (profile as any)?.geofence_id),
-    onSuccess: (res: any) => {
-      if (res?.mock_success) {
-        toast.success('Payment Successful! Wallet Updated.');
-        setTimeout(() => {
-          window.location.href = res.frontend_redirect;
-        }, 1500);
-        return;
-      }
-      if (res?.data?.params) {
-        setPayuData(res.data);
-        toast.loading('Redirecting to payment gateway...');
-      } else {
-        toast.error('Payment initiation failed');
-      }
+    mutationFn: async () => {
+      const res = await payWithRazorpay({ type: 'wallet_topup', amount: finalAmount, geofence_id: (profile as any)?.geofence_id });
+      if (!res.ok) throw new Error(res.cancelled ? 'Payment cancelled' : (res.message || 'Payment failed'));
+      return res;
+    },
+    onSuccess: () => {
+      toast.success('Wallet topped up successfully!');
+      qc.invalidateQueries({ queryKey: ['profile'] });
+      qc.invalidateQueries({ queryKey: ['payments'] });
     },
     onError: (e: any) => toast.error(e.message),
   });
-
-  // Auto-submit PayU form when data is ready
-  useEffect(() => {
-    if (payuData && payuData.params) {
-      const form = document.getElementById('payu-form') as HTMLFormElement;
-      if (form) form.submit();
-    }
-  }, [payuData]);
   
   if (isLoading) return null;
   
@@ -222,14 +209,6 @@ export default function WalletPage() {
       </div>
       <Footer />
 
-      {/* Hidden PayU Form */}
-      {payuData && (
-        <form id="payu-form" action={payuData.payu_url} method="POST" style={{ display: 'none' }}>
-          {Object.entries(payuData.params).map(([key, val]: [string, any]) => (
-            <input key={key} type="hidden" name={key} value={val} />
-          ))}
-        </form>
-      )}
       <style>{`
         .wallet-grid { display: grid; grid-template-columns: 1fr 400px; gap: 24px; align-items: start; }
         @media(max-width:860px){ .wallet-grid { grid-template-columns: 1fr; } }

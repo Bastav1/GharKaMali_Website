@@ -4,6 +4,7 @@ import { useCart } from '@/store/cart';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { createOrder, addBookingAddons, validateCoupon, getAvailableCoupons } from '@/lib/api';
+import { payWithRazorpay } from '@/lib/razorpay';
 import { sanitize } from '@/lib/validators';
 import StateSelect from '@/components/StateSelect';
 import { useAuth } from '@/store/auth';
@@ -189,6 +190,8 @@ export default function CartDrawer() {
 
       let orderResponse: any = null;
       let bookingResponses: any[] = [];
+      // Everything in the cart is paid together in ONE Razorpay transaction.
+      const fulfill: { type: 'order' | 'booking' | 'subscription'; id: number }[] = [];
 
       // 1. Process Shop Order if products exist
       if (productItems.length > 0) {
@@ -210,6 +213,7 @@ export default function CartDrawer() {
           service_latitude: finalLat || undefined,
           service_longitude: finalLng || undefined,
           apply_gst: applyGst,
+          payment_method: 'razorpay',
           ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
           ...(applyGst ? {
             shipping_state: shippingStateForOrder,
@@ -218,6 +222,7 @@ export default function CartDrawer() {
           } : {}),
         });
         setOrderNum(orderResponse?.order_number || orderResponse?.txnid || 'GKM-ORD-' + Date.now());
+        if (orderResponse?.order_id) fulfill.push({ type: 'order', id: orderResponse.order_id });
       }
 
       // 2. Process Service Bookings/Subscriptions if services exist
@@ -241,7 +246,8 @@ export default function CartDrawer() {
               auto_renew: svc.bookingDetails?.auto_renew ?? true,
               addon_ids: svc.bookingDetails?.addons || [],
               addons: svc.bookingDetails?.addons || [],
-              total_amount: svc.bookingDetails?.price
+              total_amount: svc.bookingDetails?.price,
+              payment_method: 'razorpay',
             });
           } else {
             res = await createBooking({
@@ -269,8 +275,9 @@ export default function CartDrawer() {
             }
           }
           bookingResponses.push(res);
+          if (res?.id) fulfill.push({ type: isSub ? 'subscription' : 'booking', id: res.id });
         }
-        
+
         // If it was ONLY services, set orderNum to the first booking number for the UI
         if (productItems.length === 0) {
           setOrderNum(bookingResponses[0]?.booking_number || 'GKM-BKG-' + Date.now());
@@ -278,8 +285,16 @@ export default function CartDrawer() {
         setMaliBooked(bookingResponses[0]);
       }
 
-      const totalPrice = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-      // Mock Payment Step
+      // Single combined Razorpay payment for the whole cart (products + visits).
+      if (fulfill.length > 0) {
+        const pay = await payWithRazorpay({ fulfill });
+        if (!pay.ok) {
+          toast.error(pay.cancelled ? 'Payment cancelled — your items are saved as pending. Pay from My Orders / My Bookings.' : (pay.message || 'Payment failed'));
+          setStep('address');
+          return;
+        }
+      }
+
       setStep('success');
       clearCart();
     } catch (err: any) {

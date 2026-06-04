@@ -147,6 +147,7 @@ export const createSubscription = (b: {
   addons?: { addon_id: number; quantity: number }[];
   addon_ids?: { addon_id: number; quantity: number }[];
   total_amount?: number;
+  payment_method?: string;
 }) => req('/subscriptions', { method: 'POST', body: JSON.stringify(b) });
 
 export const getMySubscriptions = () => req('/subscriptions/my');
@@ -170,14 +171,19 @@ export const deleteAddress = (id: number) => req(`/addresses/${id}`, { method: '
 export const setDefaultAddress = (id: number) => req(`/addresses/${id}/default`, { method: 'PATCH' });
 
 // ─── PAYMENTS ─────────────────────────────────────────────────────────────────
-export const initiatePayment = (b: any) =>
-  req('/payments/initiate', { method: 'POST', body: JSON.stringify(b) });
-
 export const getPayments = (page?: number, limit?: number) =>
   req(`/payments/my${qs({ page, limit })}`);
 
 export const walletTopup = (amount: number, geofence_id?: number) =>
   req('/payments/wallet-topup', { method: 'POST', body: JSON.stringify({ amount, geofence_id }) });
+
+// ─── RAZORPAY ─────────────────────────────────────────────────────────────────
+// Create a Razorpay order on the backend (returns key_id, order_id, amount, …).
+export const createRazorpayOrder = (b: { type?: string; amount?: number; booking_id?: number; subscription_id?: number; order_id?: number; geofence_id?: number; fulfill?: { type: string; id: number }[] }) =>
+  req('/payments/razorpay/order', { method: 'POST', body: JSON.stringify(b) });
+// Verify the signature Razorpay Checkout returns; the backend then fulfills.
+export const verifyRazorpayPayment = (b: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+  req('/payments/razorpay/verify', { method: 'POST', body: JSON.stringify(b) });
 
 // ─── PLANTOPEDIA ──────────────────────────────────────────────────────────────
 export const identifyPlant = (form: FormData) =>
@@ -372,6 +378,7 @@ export const createOrder = (b: {
   billing_gstin?: string;
   billing_business_name?: string;
   coupon_code?: string;
+  payment_method?: string;
 }) => req('/shop/orders', { method: 'POST', body: JSON.stringify(b) });
 export const getMyOrders = () => req('/shop/orders/my');
 
