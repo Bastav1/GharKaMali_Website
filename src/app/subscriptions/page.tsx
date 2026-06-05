@@ -105,12 +105,10 @@ export default function SubscriptionsPage() {
     setActing(true);
     try {
       const pay = await payWithRazorpay({ type: 'subscription', subscription_id: sub.id });
-      if (pay.ok) {
-        toast.success('Payment successful! Your plan is now active.');
-        qc.invalidateQueries({ queryKey: ['subscriptions'] });
-      } else if (!pay.cancelled) {
-        toast.error(pay.message || 'Payment failed');
-      }
+      if (pay.ok) toast.success('Payment successful! Your plan is now active.');
+      else if (pay.cancelled) toast('Payment cancelled — subscription cancelled.', { icon: '⚠️' });
+      else toast.error(pay.message || 'Payment failed');
+      qc.invalidateQueries({ queryKey: ['subscriptions'] }); // reflect paid or cancelled state
     } finally {
       setActing(false);
     }

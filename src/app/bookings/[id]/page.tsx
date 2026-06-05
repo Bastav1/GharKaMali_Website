@@ -138,12 +138,10 @@ export default function BookingDetailPage() {
     setPaying(true);
     try {
       const pay = await payWithRazorpay({ type: 'booking', booking_id: booking.id });
-      if (pay.ok) {
-        toast.success('✅ Payment successful!');
-        refetch();
-      } else if (!pay.cancelled) {
-        toast.error(pay.message || 'Payment failed');
-      }
+      if (pay.ok) toast.success('✅ Payment successful!');
+      else if (pay.cancelled) toast('Payment cancelled — booking cancelled.', { icon: '⚠️' });
+      else toast.error(pay.message || 'Payment failed');
+      refetch(); // reflect the updated (paid or cancelled) state
     } finally {
       setPaying(false);
     }
