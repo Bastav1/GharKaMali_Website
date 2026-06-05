@@ -184,6 +184,10 @@ export const createRazorpayOrder = (b: { type?: string; amount?: number; booking
 // Verify the signature Razorpay Checkout returns; the backend then fulfills.
 export const verifyRazorpayPayment = (b: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
   req('/payments/razorpay/verify', { method: 'POST', body: JSON.stringify(b) });
+// Cancel a dismissed/unpaid payment so its order/booking/subscription is voided
+// (stock + coupon restored) instead of lingering in "pending".
+export const cancelRazorpayPayment = (b: { razorpay_order_id: string }) =>
+  req('/payments/razorpay/cancel', { method: 'POST', body: JSON.stringify(b) });
 
 // ─── PLANTOPEDIA ──────────────────────────────────────────────────────────────
 export const identifyPlant = (form: FormData) =>

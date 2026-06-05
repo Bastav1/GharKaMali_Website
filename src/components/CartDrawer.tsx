@@ -283,7 +283,8 @@ export default function CartDrawer() {
       if (fulfill.length > 0) {
         const pay = await payWithRazorpay({ fulfill });
         if (!pay.ok) {
-          toast.error(pay.cancelled ? 'Payment cancelled — your items are saved as pending. Pay from My Orders / My Bookings.' : (pay.message || 'Payment failed'));
+          // Backend voids the whole unpaid cart (stock + coupon restored) on cancel.
+          toast.error(pay.cancelled ? 'Payment cancelled — your order was not placed.' : (pay.message || 'Payment failed'));
           setStep('address');
           return;
         }

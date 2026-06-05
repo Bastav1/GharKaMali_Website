@@ -1,5 +1,5 @@
 'use client';
-import { createRazorpayOrder, verifyRazorpayPayment } from './api';
+import { createRazorpayOrder, verifyRazorpayPayment, cancelRazorpayPayment } from './api';
 
 declare global {
   interface Window { Razorpay?: any }
@@ -73,7 +73,14 @@ export async function payWithRazorpay(args: RazorpayArgs): Promise<RazorpayResul
           resolve({ ok: false, message: e?.message || 'We could not verify your payment. If money was deducted it will be refunded.' });
         }
       },
-      modal: { ondismiss: () => resolve({ ok: false, cancelled: true, message: 'Payment cancelled' }) },
+      modal: {
+        // User closed Checkout without paying → void the just-created order/booking/
+        // subscription so it isn't left lingering in "pending". Fire-and-forget.
+        ondismiss: () => {
+          cancelRazorpayPayment({ razorpay_order_id: order.order_id }).catch(() => {});
+          resolve({ ok: false, cancelled: true, message: 'Payment cancelled — your order was not placed' });
+        },
+      },
     });
     rzp.on('payment.failed', (resp: any) => resolve({ ok: false, message: resp?.error?.description || 'Payment failed' }));
     rzp.open();

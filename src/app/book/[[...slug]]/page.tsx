@@ -201,9 +201,14 @@ function BookFlow() {
           payment_method: 'razorpay',
         });
         const pay = await payWithRazorpay({ type: 'subscription', subscription_id: res.id });
-        if (pay.ok) toast.success('Subscription activated!');
-        else toast(pay.cancelled ? 'Payment pending — complete it from My Plans.' : (pay.message || 'Payment failed'), { icon: '⏳' });
-        router.push('/subscriptions');
+        if (pay.ok) {
+          toast.success('Subscription activated!');
+          router.push('/subscriptions');
+        } else {
+          // On cancel/failure the backend has voided the unpaid subscription.
+          toast(pay.cancelled ? 'Payment cancelled — subscription not placed.' : (pay.message || 'Payment failed'), { icon: '⚠️' });
+          setSubmitting(false);
+        }
       } else {
         const isInstant = bookingMode === 'instant';
         try {
@@ -228,9 +233,14 @@ function BookFlow() {
         // (it reads `addons` from the payload). Do NOT call addBookingAddons here — that
         // would create duplicate add-on rows and double-charge the customer.
         const pay = await payWithRazorpay({ type: 'booking', booking_id: res.id });
-        if (pay.ok) toast.success('Booking confirmed & paid!');
-        else toast(pay.cancelled ? 'Booking created — pay from My Bookings to confirm.' : (pay.message || 'Payment failed'), { icon: '⏳' });
-        router.push(`/bookings/${res.id}`);
+        if (pay.ok) {
+          toast.success('Booking confirmed & paid!');
+          router.push(`/bookings/${res.id}`);
+        } else {
+          // On cancel/failure the backend has voided the unpaid booking.
+          toast(pay.cancelled ? 'Payment cancelled — booking not placed.' : (pay.message || 'Payment failed'), { icon: '⚠️' });
+          setSubmitting(false);
+        }
       }
     } catch (err: any) { 
       console.error(err);
