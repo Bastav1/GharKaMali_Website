@@ -130,12 +130,12 @@ export default function GreenMakeoverPage() {
 
           <div className="gmr-hero-actions">
             <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="gmr-btn-ghost">
-              <Ic.WA /> Book ₹299 Consultation
+              <Ic.WA /> Book ₹399 Consultation
             </a>
           </div>
 
           <div className="gmr-adj-chip">
-            👉 “₹299 Visit – 100% Adjustable”
+            👉 “₹399 Visit – 100% Adjustable”
           </div>
         </div>
 
@@ -161,10 +161,10 @@ export default function GreenMakeoverPage() {
 
         <div className="gmr-split-content gmr-reveal">
           <div className="gmr-overline gmr-dark-overline"><Ic.Map /> Start Your Journey</div>
-          <h2 className="gmr-h2">Site Visit  <span style={{ color: 'var(--gold-deep)' }}> for just ₹299</span></h2>
+          <h2 className="gmr-h2">Site Visit  <span style={{ color: 'var(--gold-deep)' }}> for just ₹399</span></h2>
 
           <div className="gmr-checklist">
-            {['Space assessment & walkthrough', 'Layout & design suggestions', 'Plant recommendations', 'Budget planning', '₹299 fully adjusted in final cost', 'No obligation, pure advice'].map((item, i) => (
+            {['Space assessment & walkthrough', 'Layout & design suggestions', 'Plant recommendations', 'Budget planning', '₹399 fully adjusted in final cost', 'No obligation, pure advice'].map((item, i) => (
               <div key={i} className="gmr-check-row">
                 <div className="gmr-check-icon"><Ic.Check /></div>
                 <span>{item}</span>
@@ -184,7 +184,7 @@ export default function GreenMakeoverPage() {
           </div>
 
           <div className="gmr-adj-chip gmr-adj-dark">
-            👉 “₹299 Visit – 100% Adjustable”
+            👉 “₹399 Visit – 100% Adjustable”
           </div>
         </div>
       </section>
@@ -377,7 +377,7 @@ export default function GreenMakeoverPage() {
         <div className="gmr-cta-col gmr-reveal">
           <div className="gmr-cta-glow" />
           <h2 className="gmr-cta-h2">Start Today</h2>
-          <p className="gmr-cta-p">Book your ₹299 expert consultation. Cost 100% adjusted in your final setup.</p>
+          <p className="gmr-cta-p">Book your ₹399 expert consultation. Cost 100% adjusted in your final setup.</p>
 
           <div className="gmr-cta-stars">
             {[1, 2, 3, 4, 5].map(i => <Ic.Star key={i} />)}
@@ -385,7 +385,7 @@ export default function GreenMakeoverPage() {
           </div>
 
           <div className="gmr-adj-chip">
-            👉 “₹299 Visit – 100% Adjustable”
+            👉 “₹399 Visit – 100% Adjustable”
           </div>
 
           <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="gmr-cta-wa-btn">

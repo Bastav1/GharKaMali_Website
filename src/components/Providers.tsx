@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/store/auth';
 import { useCart } from '@/store/cart';
 import CartDrawer from './CartDrawer';
+import PageTransition from './PageTransition';
 
 import { useLocation } from '@/store/location';
 
@@ -27,6 +28,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={client}>
       <AuthHydrator>
+        <PageTransition />
         {children}
         <CartDrawer />
       </AuthHydrator>

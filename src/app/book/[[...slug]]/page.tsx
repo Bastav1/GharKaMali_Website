@@ -14,6 +14,7 @@ import { payWithRazorpay } from '@/lib/razorpay';
 import { v, firstError, sanitize } from '@/lib/validators';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from '@/store/location';
+import Spinner from '@/components/Spinner';
 const AddressPicker = dynamic(() => import('@/components/AddressPicker'), { ssr: false });
 
 type ModalType = 'location' | 'plan' | 'addons' | 'schedule';
@@ -616,7 +617,9 @@ function BookFlow() {
                       )}
 
                       {checkingInstant && (
-                        <div style={{ padding: '12px 0', color: 'var(--sage)', fontSize: '0.85rem', fontWeight: 600 }}>Checking instant availability…</div>
+                        <div style={{ padding: '12px 0', color: 'var(--sage)', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Spinner size={15} color="var(--sage)" /> Checking instant availability…
+                        </div>
                       )}
 
                       {instantInfo && instantInfo.eta_minutes <= 0 && (
@@ -664,7 +667,9 @@ function BookFlow() {
                       <div>
                         <label style={{ display: 'block', fontWeight: 800, marginBottom: 12, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--sage)' }}>2. Choose Time Slot</label>
                         {loadingSlots && (
-                          <div style={{ padding: '16px 0', color: 'var(--sage)', fontSize: '0.85rem', fontWeight: 600 }}>Checking availability...</div>
+                          <div style={{ padding: '16px 0', color: 'var(--sage)', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Spinner size={15} color="var(--sage)" /> Checking availability...
+                          </div>
                         )}
                         {!loadingSlots && slotsLoaded && noGardenersInZone && (
                           <div style={{ padding: '16px', borderRadius: 14, background: '#fff8e1', border: '1.5px solid #f5c842', color: '#7a5c00', fontWeight: 700, fontSize: '0.85rem', marginBottom: 12 }}>
@@ -757,7 +762,7 @@ function BookFlow() {
                       className="btn btn-primary"
                       style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', borderRadius: 10, fontSize: '0.85rem', boxShadow: 'var(--sh-sm)', color: '#fff', fontWeight: 600 }}
                     >
-                      {submitting ? 'Initiating Payment...' : 'Buy Now'}
+                      {submitting ? <><Spinner size={16} color="#fff" /> Initiating Payment...</> : 'Buy Now'}
                     </button>
                     <p style={{ textAlign: 'center', marginTop: 16, fontSize: '0.8rem', color: 'var(--sage)', fontWeight: 700 }}>100% Secure Checkout Guarantee</p>
                   </motion.div>

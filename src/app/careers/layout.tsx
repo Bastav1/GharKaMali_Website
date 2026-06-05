@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Careers — Join GharKaMali | Gardening & Tech Jobs in Noida',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: 'Careers at GharKaMali — Grow With Us',
     description: "Be part of India's most trusted home gardening platform. Grow your career while helping others grow their gardens.",
     url: 'https://gharkamali.com/careers',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'Careers at GharKaMali' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'Careers at GharKaMali' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'Careers at GharKaMali — Grow With Us',
     description: "Be part of India's most trusted home gardening platform.",
-    images: [{ url: '/logo.png', alt: 'Careers at GharKaMali' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', alt: 'Careers at GharKaMali' }],
   },
 };
 

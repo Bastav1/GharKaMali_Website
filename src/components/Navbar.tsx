@@ -504,7 +504,7 @@ export default function Navbar({ transparent: _transparent = false }: { transpar
             </div>
             {/* Arrow + badge */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0, position: 'relative', zIndex: 1 }}>
-              <div style={{ background: 'var(--gold)', color: 'var(--forest)', fontSize: '0.58rem', fontWeight: 900, padding: '4px 10px', borderRadius: 99, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>₹299 Visit</div>
+              <div style={{ background: 'var(--gold)', color: 'var(--forest)', fontSize: '0.58rem', fontWeight: 900, padding: '4px 10px', borderRadius: 99, whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>₹399 Visit</div>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </div>
           </Link>

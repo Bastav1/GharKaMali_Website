@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Plantopedia — Plant Encyclopedia & Care Guide | GharKaMali',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: 'Plantopedia — Plant Care Encyclopedia by GharKaMali',
     description: 'Your complete guide to growing and caring for plants at home. Hundreds of plant profiles with expert care tips.',
     url: 'https://gharkamali.com/plantopedia',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'Plantopedia — GharKaMali Plant Encyclopedia' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'Plantopedia — GharKaMali Plant Encyclopedia' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'Plantopedia — Plant Care Encyclopedia by GharKaMali',
     description: 'Your complete guide to growing and caring for plants at home.',
-    images: [{ url: '/logo.png', alt: 'Plantopedia — GharKaMali Plant Encyclopedia' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', alt: 'Plantopedia — GharKaMali Plant Encyclopedia' }],
   },
 };
 

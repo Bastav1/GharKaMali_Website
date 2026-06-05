@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { useAuth } from '@/store/auth';
 import { submitContact } from '@/lib/api';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import Spinner from '@/components/Spinner';
 
 export default function ContactPage() {
   const { user } = useAuth();
@@ -105,7 +106,7 @@ export default function ContactPage() {
                 className="btn btn-primary btn-lg"
                 style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '1rem', opacity: submitting ? 0.7 : 1 }}
               >
-                {submitting ? 'Sending...' : 'Send Message'}
+                {submitting ? <><Spinner size={16} color="#fff" /> Sending...</> : 'Send Message'}
               </button>
             </form>
           )}

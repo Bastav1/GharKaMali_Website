@@ -603,7 +603,7 @@ const Marquee = () => {
     { text: 'Serving: Ghaziabad', Icon: IcMap },
     { text: 'Serving: Gurgaon', Icon: IcMap },
     { text: 'Serving: Delhi', Icon: IcMap },
-    { text: '🚀 Launching Soon: Faridabad', Icon: IcMap },
+    { text: '🚀 Coming Soon: Faridabad', Icon: IcMap },
   ];
   return (
     <div style={{ background: 'var(--forest)', padding: '20px 0', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.1)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -627,7 +627,7 @@ const SERVICEABLE_CITIES = [
   { name: 'Ghaziabad', active: true },
   { name: 'Gurgaon', active: true },
   { name: 'Delhi', active: true },
-  { name: 'Faridabad', active: false },
+  { name: 'Faridabad', active: false, label: 'Coming Soon' },
 ];
 
 const CityMarquee = () => {
@@ -641,7 +641,7 @@ const CityMarquee = () => {
                 <div key={zi} style={{ display: 'flex', alignItems: 'center', gap: '12px', whiteSpace: 'nowrap' }}>
                   <span style={{ color: city.active ? 'var(--earth)' : 'var(--sage)' }}><IcMap /></span>
                   <span style={{ fontSize: '0.72rem', fontWeight: 800, color: city.active ? 'var(--forest)' : 'var(--sage)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                    {city.active ? `NOW SERVING: ${city.name}` : `🚀 COMING SOON: ${city.name}`}
+                    {city.active ? `NOW SERVING: ${city.name}` : `🚀 COMING SOON — ${city.name}`}
                   </span>
                 </div>
               ))}
@@ -957,14 +957,14 @@ export default function HomePage() {
           </div>
 
           <div className="city-pills-grid" style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
-            {['Noida', 'Greater Noida', 'Greater Noida West', 'Ghaziabad'].map((city, i) => (
+            {['Greater Noida West', 'Greater Noida', 'Ghaziabad', 'Gurgaon', 'Delhi'].map((city, i) => (
               <div key={i} className="city-pill" style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: '1.5px solid var(--border-gold)', borderRadius: 99, padding: '9px 20px', fontWeight: 600, color: 'var(--forest)', fontSize: '0.88rem', boxShadow: 'var(--sh-sm)' }}>
                 <span style={{ color: 'var(--earth)' }}><IcMap /></span>
                 {city}
               </div>
             ))}
             <div className="city-pill" style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--forest)', border: '1.5px solid var(--forest)', borderRadius: 99, padding: '9px 20px', fontWeight: 600, color: '#fff', fontSize: '0.88rem', boxShadow: 'var(--sh-sm)' }}>
-              🚀 Gurugram — Launching Soon
+              🚀 Faridabad — Coming Soon
             </div>
           </div>
 
@@ -1220,7 +1220,7 @@ export default function HomePage() {
 
             <div className="gm-adjustable-badge">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
-              ₹299 Visit — 100% Adjustable
+              ₹399 Visit — 100% Adjustable
             </div>
 
             <Link href="/green-makeover" className="gm-home-cta">

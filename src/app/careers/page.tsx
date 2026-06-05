@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import { API_BASE } from '@/lib/api';
+import Spinner from '@/components/Spinner';
 
 const EXPERIENCE_OPTIONS = [
   '0–1 years (fresher)',
@@ -279,7 +280,7 @@ export default function CareersPage() {
                   fontFamily: 'inherit',
                 }}
               >
-                {submitting ? 'Submitting…' : 'Submit Application 🌱'}
+                {submitting ? <><Spinner size={16} color="#fff" /> Submitting…</> : 'Submit Application 🌱'}
               </button>
 
               <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 14, marginBottom: 0 }}>

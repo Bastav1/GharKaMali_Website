@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Plant Store — Buy Plants, Pots & Garden Products Online | GharKaMali',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: 'GharKaMali Plant Store — Buy Plants, Pots & Garden Products Online',
     description: 'Buy plants, pots, tools and garden essentials online. Fast delivery in Noida & Greater Noida. Best prices guaranteed.',
     url: 'https://gharkamali.com/shop',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'GharKaMali Plant Store' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'GharKaMali Plant Store' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'GharKaMali Plant Store — Buy Plants, Pots & Garden Products Online',
     description: 'Buy plants, pots, tools and garden essentials online. Fast delivery in Noida & Greater Noida.',
-    images: [{ url: '/logo.png', alt: 'GharKaMali Plant Store' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', alt: 'GharKaMali Plant Store' }],
   },
 };
 

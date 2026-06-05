@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: 'Gardener Near Me | Mali Near Me — GharKaMali',
     description: 'Professional gardeners & malis near you in Noida, Greater Noida, Greater Noida West & Ghaziabad. Starting ₹349/visit.',
     url: 'https://gharkamali.com/near-me',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'Gardener Near Me — GharKaMali' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'Gardener Near Me — GharKaMali' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'Gardener Near Me | Mali Near Me — GharKaMali',
     description: 'Professional gardeners & malis near you in Noida & NCR. Starting ₹349/visit.',
-    images: [{ url: '/logo.png', alt: 'Gardener Near Me — GharKaMali' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', alt: 'Gardener Near Me — GharKaMali' }],
   },
 };
 

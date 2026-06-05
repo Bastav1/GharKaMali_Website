@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
     description: 'Professional plant care at your doorstep. Book in 60 seconds. Expert gardeners in Noida & Greater Noida.',
     url: 'https://gharkamali.com/book',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'Book a Gardener — GharKaMali' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'Book a Gardener — GharKaMali' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'Book a Gardener Visit — GharKaMali | ₹349 per Visit',
     description: 'Professional plant care at your doorstep. Book in 60 seconds.',
-    images: [{ url: '/logo.png', alt: 'Book a Gardener — GharKaMali' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', alt: 'Book a Gardener — GharKaMali' }],
   },
 };
 

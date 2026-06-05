@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: { params: { area: string } })
   return {
     title, description, keywords,
     alternates: { canonical: `/${a.slug}` },
-    openGraph: { title, description, url: `/${a.slug}`, images: ['/logo.png'] },
-    twitter: { card: 'summary_large_image', title, description, images: ['/logo.png'] },
+    openGraph: { title, description, url: `/${a.slug}`, images: ['https://gharkamali.com/logo.png'] },
+    twitter: { card: 'summary_large_image', title, description, images: ['https://gharkamali.com/logo.png'] },
   };
 }
 

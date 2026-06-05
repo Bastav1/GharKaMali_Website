@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions, Privacy Policy — GharKaMali',
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Terms & Conditions — GharKaMali',
     description: "GharKaMali's Terms of Service, Privacy Policy, and Gardener App Terms.",
     url: 'https://gharkamali.com/terms',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'GharKaMali Legal' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'GharKaMali Legal' }],
   },
   twitter: {
     card: 'summary',

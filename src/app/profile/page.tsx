@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import StateSelect from '@/components/StateSelect';
 import { useAuth } from '@/store/auth';
 import { getProfile, updateProfile, getMyAddresses, addAddress, deleteAddress, setDefaultAddress } from '@/lib/api';
+import Spinner from '@/components/Spinner';
 
 const IcCalendar= () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
 const IcStar    = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
@@ -202,7 +203,7 @@ export default function ProfilePage() {
                 : <div style={{ display: 'flex', gap: 10 }}>
                     <button onClick={() => { setEditing(false); setImgFile(null); setPreview(null); }} className="btn btn-outline">Cancel</button>
                     <button onClick={() => saveMut.mutate()} disabled={saveMut.isPending || !name.trim()} className="btn btn-primary" style={{ boxShadow: 'var(--sh-md)' }}>
-                      {saveMut.isPending ? 'Saving…' : 'Save Changes'}
+                      {saveMut.isPending ? <><Spinner size={15} color="#fff" /> Saving…</> : 'Save Changes'}
                     </button>
                   </div>
               }
@@ -300,7 +301,7 @@ export default function ProfilePage() {
                         className="btn btn-primary" 
                         style={{ flex: 2 }}
                       >
-                        {addAddrMut.isPending ? 'Saving…' : 'Save Address'}
+                        {addAddrMut.isPending ? <><Spinner size={15} color="#fff" /> Saving…</> : 'Save Address'}
                       </button>
                     </div>
                  </div>

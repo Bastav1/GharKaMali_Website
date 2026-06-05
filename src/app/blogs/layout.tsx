@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Gardening Blog — Plant Care Tips & Guides | GharKaMali',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: 'GharKaMali Blog — Gardening Tips & Plant Care Guides',
     description: 'Expert advice on growing and maintaining a beautiful home garden. Free guides by certified botanists.',
     url: 'https://gharkamali.com/blogs',
-    images: [{ url: '/logo.png', width: 1200, height: 630, alt: 'GharKaMali Gardening Blog' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', width: 1200, height: 630, alt: 'GharKaMali Gardening Blog' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     creator: '@gharkamali',
     title: 'GharKaMali Blog — Gardening Tips & Plant Care Guides',
     description: 'Expert advice on growing and maintaining a beautiful home garden.',
-    images: [{ url: '/logo.png', alt: 'GharKaMali Gardening Blog' }],
+    images: [{ url: 'https://gharkamali.com/logo.png', alt: 'GharKaMali Gardening Blog' }],
   },
 };
 
