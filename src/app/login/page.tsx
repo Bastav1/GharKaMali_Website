@@ -3,116 +3,49 @@ import { useState, useRef, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { sendOtp, verifyOtp } from '@/lib/api';
+import { verifyOtp } from '@/lib/api';
 import { useAuth } from '@/store/auth';
 
-type Step = 'phone' | 'otp' | 'name';
-
+// OTP is temporarily disabled for launch — customers log in with just their phone
+// number. 123456 is used as the OTP internally (the backend accepts it). The full
+// OTP flow (phone → OTP → name) lives in git history; restore it to re-enable.
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const redirect = params.get('redirect') ?? '/dashboard';
   const { login, isAuthenticated, isLoading } = useAuth();
 
-  const [step, setStep] = useState<Step>('phone');
   const [phone, setPhone] = useState('');
-  const [digits, setDigits] = useState(['','','','','','']);
-  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const timerRef = useRef<any>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { if (!isLoading && isAuthenticated) router.replace(redirect); }, [isAuthenticated, isLoading]);
-  useEffect(() => () => clearInterval(timerRef.current), []);
 
-  const getLocation = () => {
-    return new Promise<{lat: number, lng: number}>((resolve, reject) => {
-      if (!navigator.geolocation) reject(new Error('Geolocation not supported'));
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({lat: pos.coords.latitude, lng: pos.coords.longitude}),
-        (err) => reject(err),
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    });
-  };
+  const getLocation = () => new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error('Geolocation not supported'));
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      (err) => reject(err),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
 
-  const startTimer = () => {
-    setCountdown(30);
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setCountdown(c => { if (c <= 1) { clearInterval(timerRef.current); return 0; } return c - 1; }), 1000);
-  };
-
-  const handleSend = async () => {
+  const handleLogin = async () => {
     const c = phone.replace(/\D/g, '');
     if (c.length !== 10) { toast.error('Enter a valid 10-digit number'); return; }
     setLoading(true);
+    let location: { lat: number; lng: number } | null = null;
+    try { location = await getLocation(); } catch { /* location optional */ }
     try {
-      await sendOtp(c);
-      setStep('otp'); startTimer();
-      toast.success(`OTP sent to +91 ${c}`);
-      setTimeout(() => document.getElementById('otp-0')?.focus(), 100);
-    } catch(e: any) { toast.error(e.message || 'Failed to send OTP'); }
-    finally { setLoading(false); }
-  };
-
-  const handleDigit = (i: number, val: string) => {
-    const d = val.replace(/\D/g,'').slice(-1);
-    const n = [...digits]; n[i] = d; setDigits(n);
-    if (d && i < 5) document.getElementById(`otp-${i+1}`)?.focus();
-    if (n.filter(Boolean).length === 6) handleVerify(n.join(''));
-  };
-
-  const handleKey = (i: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !digits[i] && i > 0) document.getElementById(`otp-${i-1}`)?.focus();
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    const v = e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);
-    if (v.length === 6) { setDigits(v.split('')); setTimeout(() => handleVerify(v), 50); }
-    e.preventDefault();
-  };
-
-  const handleVerify = async (otp: string) => {
-    const c = phone.replace(/\D/g,'');
-    setLoading(true);
-    let location: {lat: number, lng: number} | null = null;
-    try {
-      location = await getLocation();
-    } catch (e) {
-      // Location not available, proceed without it
-    }
-    try {
-      const res: any = await verifyOtp(c, otp, undefined, location?.lat, location?.lng);
-      if (res?.is_new_user || !res?.user?.name) { setStep('name'); setLoading(false); return; }
-      login(res.user, res.token);
-      toast.success('Welcome back!');
-      router.replace(redirect);
-    } catch(e: any) {
-      toast.error(e.message || 'Invalid OTP');
-      setDigits(['','','','','','']);
-      document.getElementById('otp-0')?.focus();
-    }
-    finally { setLoading(false); }
-  };
-
-  const handleName = async () => {
-    if (!name.trim()) { toast.error('Please enter your name'); return; }
-    const c = phone.replace(/\D/g,'');
-    setLoading(true);
-    let location: {lat: number, lng: number} | null = null;
-    try {
-      location = await getLocation();
-    } catch (e) {
-      // Location not available, proceed without it
-    }
-    try {
-      const res: any = await verifyOtp(c, digits.join(''), name.trim(), location?.lat, location?.lng);
+      const res: any = await verifyOtp(c, '123456', undefined, location?.lat, location?.lng);
       login(res.user, res.token);
       toast.success('Welcome to GharKaMali!');
       router.replace(redirect);
-    } catch(e: any) { toast.error(e.message || 'Registration failed'); }
-    finally { setLoading(false); }
+    } catch (e: any) {
+      toast.error(e?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -130,93 +63,28 @@ function LoginForm() {
 
         {/* Card */}
         <div style={{ background: 'var(--bg-card)', borderRadius: 28, padding: 'clamp(28px,5vw,40px)', boxShadow: 'var(--sh-xl)' }}>
-          {/* Progress */}
-          <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 28 }}>
-            {(['phone','otp','name'] as Step[]).map((s, i) => {
-              const steps = ['phone','otp','name'];
-              const current = steps.indexOf(step);
-              return <div key={s} style={{ height: 4, borderRadius: 99, background: i <= current ? 'var(--forest)' : 'var(--cream-dark)', width: i === current ? 24 : 12, transition: 'all 0.3s' }} />;
-            })}
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.8rem', marginBottom: 6, letterSpacing: '-0.02em' }}>Sign In</h1>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 28, fontSize: '0.9rem' }}>Enter your phone number to continue</p>
+          <div className="form-group">
+            <label className="form-label">Phone Number</label>
+            <div style={{ display: 'flex', border: '1.5px solid var(--border-mid)', borderRadius: 'var(--r)', overflow: 'hidden', background: 'var(--bg)', transition: 'all 0.2s' }}
+              onFocusCapture={e => { (e.currentTarget as any).style.borderColor = 'var(--forest)'; (e.currentTarget as any).style.boxShadow = '0 0 0 4px rgba(11,61,46,0.10)'; }}
+              onBlurCapture={e => { (e.currentTarget as any).style.borderColor = 'var(--border-mid)'; (e.currentTarget as any).style.boxShadow = 'none'; }}>
+              <div style={{ padding: '12px 14px', fontWeight: 700, color: 'var(--text-2)', borderRight: '1.5px solid var(--border-mid)', background: 'var(--cream)', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>🇮🇳 +91</div>
+              <input ref={inputRef} type="tel" inputMode="numeric" maxLength={10} value={phone}
+                onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                placeholder="98765 43210" autoFocus
+                style={{ flex: 1, padding: '12px 14px', border: 'none', background: 'transparent', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '1rem', letterSpacing: '0.05em', color: 'var(--text)' }} />
+            </div>
           </div>
-
-          {step === 'phone' && (
-            <>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.8rem', marginBottom: 6, letterSpacing: '-0.02em' }}>Sign In</h1>
-              <p style={{ color: 'var(--text-muted)', marginBottom: 28, fontSize: '0.9rem' }}>Enter your phone number to get started</p>
-              <div className="form-group">
-                <label className="form-label">Phone Number</label>
-                <div style={{ display: 'flex', border: '1.5px solid var(--border-mid)', borderRadius: 'var(--r)', overflow: 'hidden', background: 'var(--bg)', transition: 'all 0.2s' }}
-                  onFocusCapture={e => { (e.currentTarget as any).style.borderColor = 'var(--forest)'; (e.currentTarget as any).style.boxShadow = '0 0 0 4px rgba(11,61,46,0.10)'; }}
-                  onBlurCapture={e => { (e.currentTarget as any).style.borderColor = 'var(--border-mid)'; (e.currentTarget as any).style.boxShadow = 'none'; }}>
-                  <div style={{ padding: '12px 14px', fontWeight: 700, color: 'var(--text-2)', borderRight: '1.5px solid var(--border-mid)', background: 'var(--cream)', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>🇮🇳 +91</div>
-                  <input ref={inputRef} type="tel" inputMode="numeric" maxLength={10} value={phone}
-                    onChange={e => setPhone(e.target.value.replace(/\D/g,''))}
-                    onKeyDown={e => e.key === 'Enter' && handleSend()}
-                    placeholder="98765 43210" autoFocus
-                    style={{ flex: 1, padding: '12px 14px', border: 'none', background: 'transparent', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '1rem', letterSpacing: '0.05em', color: 'var(--text)' }} />
-                </div>
-              </div>
-              <button onClick={handleSend} disabled={loading || phone.replace(/\D/g,'').length !== 10}
-                className="btn btn-forest w-full" style={{ justifyContent: 'center', padding: '14px' }}>
-                {loading ? <div className="btn-spinner" style={{ borderTopColor: '#fff' }} /> : 'Continue →'}
-              </button>
-              <p style={{ textAlign: 'center', marginTop: 16, fontSize: '0.78rem', color: 'var(--text-faint)' }}>
-                By continuing you agree to our <Link href="/terms" style={{ color: 'var(--forest)', fontWeight: 600 }}>Terms</Link> & <Link href="/privacy" style={{ color: 'var(--forest)', fontWeight: 600 }}>Privacy</Link>
-              </p>
-            </>
-          )}
-
-          {step === 'otp' && (
-            <>
-              <button onClick={() => { setStep('phone'); setDigits(['','','','','','']); }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(3,65,26,0.06)', border: '1.5px solid rgba(3,65,26,0.18)', color: 'var(--forest)', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 20, padding: '8px 14px', borderRadius: 99, transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'var(--forest)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--forest)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(3,65,26,0.06)'; e.currentTarget.style.color = 'var(--forest)'; e.currentTarget.style.borderColor = 'rgba(3,65,26,0.18)'; }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                Change number
-              </button>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.8rem', marginBottom: 6 }}>Check your phone</h1>
-              <p style={{ color: 'var(--text-muted)', marginBottom: 28, fontSize: '0.9rem' }}>
-                6-digit OTP sent to <strong style={{ color: 'var(--text)' }}>+91 {phone}</strong>
-              </p>
-              <div className="otp-grid" onPaste={handlePaste} style={{ marginBottom: 24 }}>
-                {digits.map((d, i) => (
-                  <input key={i} id={`otp-${i}`} type="tel" inputMode="numeric" maxLength={1} value={d}
-                    className={`otp-box ${d ? 'filled' : ''}`}
-                    onChange={e => handleDigit(i, e.target.value)}
-                    onKeyDown={e => handleKey(i, e)} />
-                ))}
-              </div>
-              {loading && <div style={{ textAlign: 'center', padding: '8px 0', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Verifying…</div>}
-              <button onClick={() => handleVerify(digits.join(''))} disabled={loading || digits.some(d => !d)}
-                className="btn btn-forest w-full" style={{ justifyContent: 'center', padding: '14px' }}>
-                {loading ? <div className="btn-spinner" style={{ borderTopColor: '#fff' }} /> : 'Verify OTP'}
-              </button>
-              <p style={{ textAlign: 'center', marginTop: 18, fontSize: '0.83rem', color: 'var(--text-muted)' }}>
-                {countdown > 0 ? <>Resend in <strong style={{ color: 'var(--text)' }}>{countdown}s</strong></> : <button onClick={handleSend} style={{ background: 'none', border: 'none', color: 'var(--forest)', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.83rem' }}>Resend OTP</button>}
-              </p>
-            </>
-          )}
-
-          {step === 'name' && (
-            <>
-              <div style={{ color: '#fff', fontSize: '2.5rem', marginBottom: 16, textAlign: 'center', opacity: 0.9 }}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-              <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.8rem', marginBottom: 6, textAlign: 'center' }}>Welcome!</h1>
-              <p style={{ color: 'var(--text-muted)', marginBottom: 28, fontSize: '0.9rem', textAlign: 'center' }}>You're new here — what should we call you?</p>
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input type="text" className="form-input" placeholder="e.g. Priya Sharma" value={name}
-                  onChange={e => setName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleName()} autoFocus />
-              </div>
-              <button onClick={handleName} disabled={loading || !name.trim()}
-                className="btn btn-forest w-full" style={{ justifyContent: 'center', padding: '14px' }}>
-                {loading ? <div className="btn-spinner" style={{ borderTopColor: '#fff' }} /> : 'Create Account →'}
-              </button>
-            </>
-          )}
+          <button onClick={handleLogin} disabled={loading || phone.replace(/\D/g, '').length !== 10}
+            className="btn btn-forest w-full" style={{ justifyContent: 'center', padding: '14px' }}>
+            {loading ? <div className="btn-spinner" style={{ borderTopColor: '#fff' }} /> : 'Continue →'}
+          </button>
+          <p style={{ textAlign: 'center', marginTop: 16, fontSize: '0.78rem', color: 'var(--text-faint)' }}>
+            By continuing you agree to our <Link href="/terms" style={{ color: 'var(--forest)', fontWeight: 600 }}>Terms</Link> &amp; <Link href="/privacy" style={{ color: 'var(--forest)', fontWeight: 600 }}>Privacy</Link>
+          </p>
         </div>
       </div>
     </div>

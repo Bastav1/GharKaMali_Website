@@ -8489,14 +8489,22 @@ body {
     flex-direction: column !important;
   }
 
+  /* In the column layout, `flex: 1 1 180px` would make the input 180px+ TALL
+     and stretch — pin it to its natural height and full width instead. */
+  .addr-picker-search-row input {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+  }
+
   .addr-picker-search-row button {
     width: 100% !important;
     justify-content: center !important;
     text-align: center !important;
   }
 
+  /* Keep the map modest so the pinned Save/Confirm footer always fits on screen. */
   .addr-picker-map {
-    min-height: 200px !important;
+    min-height: 150px !important;
   }
 }
 

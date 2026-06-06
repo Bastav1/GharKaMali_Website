@@ -146,9 +146,9 @@ export default function Footer() {
             {/* Socials */}
             <div className="footer-social-row" style={{ display: 'flex', flexDirection: 'row', gap: 10, marginTop: 4, flexWrap: 'nowrap', justifyContent: 'center' }}>
               {[
-                { Icon: IcInsta, href: 'https://www.instagram.com/gharkamali', label: 'Instagram' },
+                { Icon: IcInsta, href: 'https://www.instagram.com/ghar.ka.mali?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==', label: 'Instagram' },
                 { Icon: IcYT, href: 'https://www.youtube.com/@gharkamali', label: 'YouTube' },
-                { Icon: IcFacebook, href: 'https://www.facebook.com/gharkamali', label: 'Facebook' },
+                { Icon: IcFacebook, href: 'https://www.facebook.com/share/1CvmXSqzDq/?mibextid=wwXIfr', label: 'Facebook' },
                 { Icon: IcLinkedIn, href: 'https://www.linkedin.com/company/gharkamali', label: 'LinkedIn' },
                 { Icon: IcWhatsApp, href: WA_URL, label: 'WhatsApp' },
               ].map(s => (
@@ -195,7 +195,7 @@ export default function Footer() {
           <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#16A34A', boxShadow: '0 0 10px rgba(22,163,74,0.4)', animation: 'pulse-dot 2s infinite' }} />
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>Operational — Noida &amp; G. Noida</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>Operational in Delhi NCR</span>
             </div>
             <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
               Built by <strong style={{ color: 'var(--forest)', fontWeight: 800 }}>Gobt</strong>
