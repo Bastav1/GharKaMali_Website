@@ -135,7 +135,7 @@ export default function WalletPage() {
                           <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: 6, color: 'var(--forest)' }}>{txLabel}</div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: 'var(--earth)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                             <IcClock />
-                            {tx.created_at && new Date(tx.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {tx.created_at && new Date(tx.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' })}
                           </div>
                         </div>
                         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1.2rem', color: isCredit ? '#16A34A' : 'var(--forest)', flexShrink: 0 }}>

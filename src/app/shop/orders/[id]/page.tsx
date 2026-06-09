@@ -227,13 +227,14 @@ export default function OrderDetailPage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 800, color: 'var(--forest)' }}>Order Placed</div>
                       <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                        {order.createdAt ? new Date(order.createdAt).toLocaleString('en-IN', { 
-                          day: 'numeric', 
-                          month: 'short', 
+                        {order.createdAt ? new Date(order.createdAt).toLocaleString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
                           year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit',
-                          second: '2-digit'
+                          second: '2-digit',
+                          timeZone: 'Asia/Kolkata'
                         }) : 'Order date not available'}
                       </div>
                     </div>
@@ -278,12 +279,13 @@ export default function OrderDetailPage() {
                               {sh.status.charAt(0).toUpperCase() + sh.status.slice(1).replace(/_/g, ' ')}
                             </div>
                             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                              {sh.updatedAt ? new Date(sh.updatedAt).toLocaleString('en-IN', { 
-                                day: 'numeric', 
-                                month: 'short', 
+                              {sh.updatedAt ? new Date(sh.updatedAt).toLocaleString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
                                 year: 'numeric',
                                 hour: '2-digit',
-                                minute: '2-digit'
+                                minute: '2-digit',
+                                timeZone: 'Asia/Kolkata'
                               }) : 'Time not available'}
                             </div>
                             {sh.notes && <div style={{ fontSize: '0.78rem', color: 'var(--sage)', marginTop: 4 }}>{sh.notes}</div>}

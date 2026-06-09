@@ -108,7 +108,7 @@ function downloadBookingBill(booking: any) {
     <div><div class="logo">🌿 GharKaMali</div><div class="tag">Professional Plant Care Services</div>
     <div style="margin-top:8px;font-size:11px;color:#6b8f71">GSTIN: 09AAAAA0000A1Z5 (Dummy)<br>Noida, Uttar Pradesh — 201301</div></div>
     <div class="inv-title"><h2>TAX INVOICE</h2><p>#${booking.booking_number}</p>
-    <p style="margin-top:8px">${new Date(booking.created_at || Date.now()).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</p>
+    <p style="margin-top:8px">${new Date(booking.created_at || Date.now()).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'})}</p>
     <div class="badge" style="margin-top:8px">${(booking.payment_status || 'PAID').toUpperCase()}</div></div>
   </div>
   <div class="grid">
@@ -338,8 +338,8 @@ export default function BookingDetailPage() {
                             </div>
                             {timestamp && done && (
                               <div style={{ textAlign:'right', flexShrink:0 }}>
-                                <div style={{ fontSize:'0.75rem', fontWeight:700, color: active ? 'var(--forest)' : 'var(--text-muted)' }}>{new Date(timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}</div>
-                                <div style={{ fontSize:'0.6rem', color:'var(--text-faint)' }}>{new Date(timestamp).toLocaleDateString([], { day:'numeric', month:'short' })}</div>
+                                <div style={{ fontSize:'0.75rem', fontWeight:700, color: active ? 'var(--forest)' : 'var(--text-muted)' }}>{new Date(timestamp).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' })}</div>
+                                <div style={{ fontSize:'0.6rem', color:'var(--text-faint)' }}>{new Date(timestamp).toLocaleDateString('en-IN', { day:'numeric', month:'short', timeZone:'Asia/Kolkata' })}</div>
                               </div>
                             )}
                           </div>
@@ -420,7 +420,7 @@ export default function BookingDetailPage() {
                 <h3 style={{ fontWeight:700, fontSize:'0.95rem', marginBottom:18 }}>Booking Details</h3>
                 {[
                   { icon:<IcLocation />, label:'Address', value: booking.service_address },
-                  { icon:<IcCalendar />, label:'Scheduled', value: `${booking.scheduled_date ? new Date(booking.scheduled_date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'long', year:'numeric' }) : '—'} at ${booking.scheduled_time ?? 'Flexible'}` },
+                  { icon:<IcCalendar />, label:'Scheduled', value: `${booking.scheduled_date ? new Date(booking.scheduled_date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'long', year:'numeric', timeZone:'Asia/Kolkata' }) : '—'} at ${booking.scheduled_time ?? 'Flexible'}` },
                   { icon:<IcLeaf />, label:'Plants', value: `${booking.plant_count ?? '—'} plants` },
                   { icon:<IcLocation />, label:'Zone', value: booking.zone?.name ?? '—' },
                 ].map(row => (

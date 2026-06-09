@@ -20,7 +20,7 @@ const STATUS_MAP: Record<string, [string, string]> = {
 };
 
 const fmt = (d?: string) =>
-  d ? new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  d ? new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }) : '';
 
 export default function TicketDetailPage() {
   const { id } = useParams<{ id: string }>();

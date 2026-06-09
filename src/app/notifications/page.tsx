@@ -82,7 +82,7 @@ export default function NotificationsPage() {
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontWeight: n.is_read ? 800 : 900, fontSize:'1.05rem', marginBottom:4, color: n.is_read ? 'var(--sage)' : 'var(--forest)', fontFamily: 'var(--font-display)' }}>{n.title || 'Notification'}</div>
                   <div style={{ fontWeight: 500, fontSize:'0.9rem', marginBottom:8, lineHeight:1.5, color: n.is_read ? 'var(--sage)' : 'var(--forest-light)', opacity: n.is_read ? 0.7 : 1 }}>{n.body || n.message}</div>
-                  <div style={{ fontSize:'0.75rem', color:'var(--sage)', fontFamily: 'var(--font-mono)', fontWeight:600, opacity: 0.8 }}>{ (n.createdAt || n.created_at) && new Date(n.createdAt || n.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
+                  <div style={{ fontSize:'0.75rem', color:'var(--sage)', fontFamily: 'var(--font-mono)', fontWeight:600, opacity: 0.8 }}>{ (n.createdAt || n.created_at) && new Date(n.createdAt || n.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' })}</div>
                 </div>
                 {!n.is_read && <div style={{ width:10, height:10, borderRadius:'50%', background:'var(--forest)', flexShrink:0, marginTop:8, boxShadow: '0 0 8px rgba(11,61,46,0.3)' }} />}
               </div>
