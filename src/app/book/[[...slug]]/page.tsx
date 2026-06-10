@@ -530,7 +530,9 @@ function BookFlow() {
                             ₹{p.plan_type !== 'subscription' && zone?.base_price != null ? zone.base_price : p.price}
                             <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>/{p.plan_type === 'subscription' ? 'mo' : 'visit'}</span>
                           </div>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', lineHeight: 1.4 }}>{p.description || 'Professional botanical care.'}</div>
+                          {/* Strip any stale "up to N plants" phrase from the admin description —
+                              the plant coverage is shown authoritatively by the badge below (max_plants). */}
+                          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--sage)', lineHeight: 1.4 }}>{(p.description || 'Professional botanical care.').replace(/\.?\s*(up to|upto)\s*\d+\s*plants?\.?/gi, '').trim() || 'Professional botanical care.'}</div>
                           {p.max_plants ? <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.72rem', fontWeight: 800, color: 'var(--forest)', background: 'rgba(3,65,26,0.07)', padding: '5px 11px', borderRadius: 99 }}>🌿 Includes up to {p.max_plants} plants</div> : null}
                         </div>
                       ))}
